@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submission Form</title>
+    <link rel="stylesheet" href="./style/app.css">
+</head>
+<body class="bg-gray-50 min-h-screen py-8">
+   
+
+    <div class="container mx-auto max-w-2xl px-4">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Submission Form</h1>
+            <p class="text-gray-600 mb-8">Please fill out all required fields to submit your entry.</p>
+            
+            <form id="submissionForm" class="space-y-6">
+                <!-- Unique ID Field -->
+                <div>
+                    <label for="uniqueId" class="block text-sm font-medium text-gray-700 mb-2">
+                        Unique ID <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="uniqueId" 
+                        name="uniqueId" 
+                        required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Enter your unique ID"
+                    >
+                    <p class="mt-1 text-sm text-gray-500">This should be a unique identifier assigned to you.</p>
+                </div>
+
+                <!-- Problem Statement Selection -->
+                <div>
+                    <label for="problemStatement" class="block text-sm font-medium text-gray-700 mb-2">
+                        Problem Statement <span class="text-red-500">*</span>
+                    </label>
+                    <select 
+                        id="problemStatement" 
+                        name="problemStatement" 
+                        required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                        <option value="">Select a problem statement</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                       
+                    </select>
+                </div>
+
+                <!-- Logo Image Upload -->
+                <div>
+                    <label for="logoImage" class="block text-sm font-medium text-gray-700 mb-2">
+                        Logo Image <span class="text-red-500">*</span>
+                    </label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-gray-400 transition-colors">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-gray-600">
+                                <label for="logoImage" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                    <span>Upload logo image</span>
+                                    <input 
+                                        id="logoImage" 
+                                        name="logoImage" 
+                                        type="file" 
+                                        accept="image/*"
+                                        required
+                                        class="sr-only"
+                                        data-max-size="5242880"
+                                    >
+                                </label>
+                                <p class="pl-1">or drag and drop</p>
+                            </div>
+                            <p class="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                        </div>
+                    </div>
+                    <div id="logoPreview" class="mt-3 hidden">
+                        <img id="logoPreviewImg" class="h-20 w-20 object-cover rounded-lg" alt="Logo preview">
+                        <p id="logoFileName" class="text-sm text-gray-600 mt-1"></p>
+                    </div>
+                    <div id="logoError" class="mt-2 text-sm text-red-600 hidden"></div>
+                </div>
+
+                <!-- Poster Image Upload -->
+                <div>
+                    <label for="posterImage" class="block text-sm font-medium text-gray-700 mb-2">
+                        Poster Image <span class="text-red-500">*</span>
+                    </label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-gray-400 transition-colors">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-gray-600">
+                                <label for="posterImage" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                    <span>Upload poster image</span>
+                                    <input 
+                                        id="posterImage" 
+                                        name="posterImage" 
+                                        type="file" 
+                                        accept="image/*"
+                                        required
+                                        class="sr-only"
+                                        data-max-size="5242880"
+                                    >
+                                </label>
+                                <p class="pl-1">or drag and drop</p>
+                            </div>
+                            <p class="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                        </div>
+                    </div>
+                    <div id="posterPreview" class="mt-3 hidden">
+                        <img id="posterPreviewImg" class="h-32 w-auto object-cover rounded-lg" alt="Poster preview">
+                        <p id="posterFileName" class="text-sm text-gray-600 mt-1"></p>
+                    </div>
+                    <div id="posterError" class="mt-2 text-sm text-red-600 hidden"></div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button 
+                        type="submit" 
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        id="submitBtn"
+                    >
+                        Submit Form
+                    </button>
+                </div>
+            </form>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="hidden mt-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md">
+                <div class="flex">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Form submitted successfully!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./lib/appwrite.js"></script>
+    <script type="module">
+        import { storage, databases } from './lib/appwrite.js';
+        import { ID } from "appwrite";
+
+        // Configuration
+        const BUCKET_ID = import.meta.env.VITE_APPWRITE_BUCKET_ID;
+        const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
+        const COLLECTION_ID = import.meta.env.VITE_APPWRITE_COLLECTION_ID;
+        
+        // File size validation (5MB = 5242880 bytes)
+        const MAX_FILE_SIZE = 5242880;
+
+        function validateFileSize(file, errorElementId) {
+            const errorElement = document.getElementById(errorElementId);
+            
+            if (file.size > MAX_FILE_SIZE) {
+                errorElement.textContent = `File size exceeds 5MB limit. Selected file is ${(file.size / 1024 / 1024).toFixed(2)}MB.`;
+                errorElement.classList.remove('hidden');
+                return false;
+            } else {
+                errorElement.classList.add('hidden');
+                return true;
+            }
+        }
+
+        function showImagePreview(file, previewId, imgId, fileNameId) {
+            const preview = document.getElementById(previewId);
+            const img = document.getElementById(imgId);
+            const fileName = document.getElementById(fileNameId);
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                fileName.textContent = file.name;
+                preview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Logo image handling
+        document.getElementById('logoImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (validateFileSize(file, 'logoError')) {
+                    showImagePreview(file, 'logoPreview', 'logoPreviewImg', 'logoFileName');
+                } else {
+                    // Clear the file input if validation fails
+                    e.target.value = '';
+                    document.getElementById('logoPreview').classList.add('hidden');
+                }
+            }
+        });
+
+        // Poster image handling
+        document.getElementById('posterImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (validateFileSize(file, 'posterError')) {
+                    showImagePreview(file, 'posterPreview', 'posterPreviewImg', 'posterFileName');
+                } else {
+                    // Clear the file input if validation fails
+                    e.target.value = '';
+                    document.getElementById('posterPreview').classList.add('hidden');
+                }
+            }
+        });
+
+        // Form submission handling
+        document.getElementById('submissionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Get form data
+            const uniqueId = document.getElementById('uniqueId').value;
+            const problemStatement = document.getElementById('problemStatement').value;
+            const logoFile = document.getElementById('logoImage').files[0];
+            const posterFile = document.getElementById('posterImage').files[0];
+            
+            // Validate files one more time before submission
+            if (!validateFileSize(logoFile, 'logoError') || !validateFileSize(posterFile, 'posterError')) {
+                return;
+            }
+            
+            // Disable submit button and show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+            
+            try {
+                // Upload logo image to Appwrite Storage
+                submitBtn.textContent = 'Uploading logo...';
+                const logoResponse = await storage.createFile(
+                    BUCKET_ID,
+                    ID.unique(),
+                    logoFile
+                );
+                
+                // Upload poster image to Appwrite Storage
+                submitBtn.textContent = 'Uploading poster...';
+                const posterResponse = await storage.createFile(
+                    BUCKET_ID,
+                    ID.unique(),
+                    posterFile
+                );
+                
+                // Create submission document in database
+                submitBtn.textContent = 'Saving submission...';
+                const submissionData = {
+                    uniqueId: uniqueId,
+                    problemStatement: problemStatement,
+                    logoFileId: logoResponse.$id,
+                    posterFileId: posterResponse.$id,
+                    logoFileName: logoFile.name,
+                    posterFileName: posterFile.name,
+                    submittedAt: new Date().toISOString()
+                };
+                
+                await databases.createDocument(
+                    DATABASE_ID,
+                    COLLECTION_ID,
+                    ID.unique(),
+                    submissionData
+                );
+                
+                // Show success message
+                successMessage.innerHTML = `
+                    <div class="flex">
+                        <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <div>
+                            <p class="font-medium">Form submitted successfully!</p>
+                            <p class="text-sm">Your submission ID: ${uniqueId}</p>
+                            <p class="text-sm">Images uploaded and data saved</p>
+                        </div>
+                    </div>
+                `;
+                successMessage.classList.remove('hidden');
+                
+                // Reset form
+                document.getElementById('submissionForm').reset();
+                document.getElementById('logoPreview').classList.add('hidden');
+                document.getElementById('posterPreview').classList.add('hidden');
+                
+                // Scroll to success message
+                successMessage.scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                console.error('Submission error:', error);
+                
+                // Show error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md';
+                errorDiv.innerHTML = `
+                    <div class="flex">
+                        <svg class="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                        <div>
+                            <p class="font-medium">Submission failed!</p>
+                            <p class="text-sm">${error.message}</p>
+                        </div>
+                    </div>
+                `;
+                
+                const existingError = document.querySelector('.bg-red-100');
+                if (existingError) {
+                    existingError.remove();
+                }
+                
+                document.querySelector('.bg-white.rounded-lg.shadow-lg').appendChild(errorDiv);
+                errorDiv.scrollIntoView({ behavior: 'smooth' });
+            } finally {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Form';
+            }
+        });
+
+        // Drag and drop functionality
+        function setupDragAndDrop(dropZone, fileInput, errorId, previewId, imgId, fileNameId) {
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dropZone.classList.add('border-blue-500', 'bg-blue-50');
+            });
+
+            dropZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.type.startsWith('image/')) {
+                        fileInput.files = files;
+                        if (validateFileSize(file, errorId)) {
+                            showImagePreview(file, previewId, imgId, fileNameId);
+                        }
+                    }
+                }
+            });
+        }
+
+        // Setup drag and drop for both upload areas
+        const logoDropZone = document.querySelector('#logoImage').closest('.border-dashed');
+        const posterDropZone = document.querySelector('#posterImage').closest('.border-dashed');
+        
+        setupDragAndDrop(logoDropZone, document.getElementById('logoImage'), 'logoError', 'logoPreview', 'logoPreviewImg', 'logoFileName');
+        setupDragAndDrop(posterDropZone, document.getElementById('posterImage'), 'posterError', 'posterPreview', 'posterPreviewImg', 'posterFileName');
+    </script>
+</body>
+</html>
