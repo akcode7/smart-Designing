@@ -5,16 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submissions Dashboard</title>
     <link rel="stylesheet" href="./style/app.css">
+    <style>
+        #modalImage {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            cursor: zoom-in;
+        }
+        
+        #modalImage.zoomed {
+            cursor: zoom-out;
+        }
+        
+        #imageLoader.flex {
+            display: flex !important;
+        }
+        
+        .lightbox-button {
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+        }
+        
+        .lightbox-button:hover {
+            transform: scale(1.1);
+        }
+    </style>
 </head>
 <body class="bg-gray-50 min-h-screen py-8">
+    <!-- Authentication Screen -->
+    <div id="authScreen" class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <div class="mx-auto h-12 w-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Judge Login
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Please enter your judge credentials to access the submissions dashboard
+                </p>
+            </div>
+            <form class="mt-8 space-y-6" id="judgeLoginForm">
+                <div class="space-y-4">
+                    <div>
+                        <label for="judgeUsername" class="block text-sm font-medium text-gray-700">Judge Username</label>
+                        <input 
+                            id="judgeUsername" 
+                            name="username" 
+                            type="text" 
+                            required 
+                            class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                            placeholder="Enter your judge username"
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <button 
+                        type="submit" 
+                        id="judgeLoginBtn"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span id="judgeLoginBtnText">Sign in as Judge</span>
+                        <svg id="judgeLoginSpinner" class="hidden animate-spin -mr-1 ml-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="judgeAuthError" class="hidden mt-4 p-4 rounded-md bg-red-100 text-red-700"></div>
+            </form>
+
+            <div class="text-center">
+                <a href="index.html" class="text-sm text-blue-600 hover:text-blue-500">
+                    Back to Main Application
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Content (Hidden initially) -->
+    <div id="dashboardContent" class="hidden">
     <!-- Navigation -->
     <nav class="bg-white shadow-md mb-8">
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex justify-between items-center py-4">
                 <h1 class="text-2xl font-bold text-gray-800">Submissions Dashboard</h1>
-                <a href="index.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200">
-                    New Submission
-                </a>
+                <div class="flex space-x-4">
+                    <button 
+                        id="judgeLogoutBtn"
+                        class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200"
+                    >
+                        Logout
+                    </button>
+                    
+                </div>
             </div>
         </div>
     </nav>
@@ -36,15 +123,17 @@
                     <!-- Filter by Problem Statement -->
                     <select id="problemFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">All Problems</option>
-                        <option value="Healthcare Innovation">Healthcare Innovation</option>
-                        <option value="Educational Technology">Educational Technology</option>
-                        <option value="Environmental Sustainability">Environmental Sustainability</option>
-                        <option value="Financial Technology">Financial Technology</option>
-                        <option value="Smart Transportation">Smart Transportation</option>
-                        <option value="Agriculture Technology">Agriculture Technology</option>
-                        <option value="Renewable Energy">Renewable Energy</option>
-                        <option value="Social Impact">Social Impact</option>
-                        <option value="Other">Other</option>
+                        <option value="problemstatement1">Problem Statement 1</option>
+                        <option value="problemstatement2">Problem Statement 2</option>
+                        <option value="problemstatement3">Problem Statement 3</option>
+                    </select>
+                    
+                    <!-- Filter by Evaluation Status -->
+                    <select id="statusFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending Only</option>
+                        <option value="evaluated">Evaluated Only</option>
+                        <option value="my-evaluations">My Evaluations</option>
                     </select>
                 </div>
                 
@@ -70,22 +159,26 @@
 
     <!-- Statistics -->
     <div id="statsContainer" class="hidden max-w-6xl mx-auto px-4 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div class="bg-white rounded-lg shadow-md p-4 text-center">
                 <h3 class="text-lg font-semibold text-gray-700">Total Submissions</h3>
                 <p id="totalCount" class="text-3xl font-bold text-blue-600">0</p>
             </div>
             <div class="bg-white rounded-lg shadow-md p-4 text-center">
-                <h3 class="text-lg font-semibold text-gray-700">Healthcare</h3>
-                <p id="healthcareCount" class="text-3xl font-bold text-green-600">0</p>
+                <h3 class="text-lg font-semibold text-gray-700">Evaluated</h3>
+                <p id="evaluatedCount" class="text-3xl font-bold text-green-600">0</p>
             </div>
             <div class="bg-white rounded-lg shadow-md p-4 text-center">
-                <h3 class="text-lg font-semibold text-gray-700">Education</h3>
-                <p id="educationCount" class="text-3xl font-bold text-purple-600">0</p>
+                <h3 class="text-lg font-semibold text-gray-700">Problem Statement 1</h3>
+                <p id="pr1" class="text-3xl font-bold text-green-600">0</p>
             </div>
             <div class="bg-white rounded-lg shadow-md p-4 text-center">
-                <h3 class="text-lg font-semibold text-gray-700">Environment</h3>
-                <p id="environmentCount" class="text-3xl font-bold text-emerald-600">0</p>
+                <h3 class="text-lg font-semibold text-gray-700">Problem Statement 2</h3>
+                <p id="pr2" class="text-3xl font-bold text-purple-600">0</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-4 text-center">
+                <h3 class="text-lg font-semibold text-gray-700">Problem Statement 3</h3>
+                <p id="pr3" class="text-3xl font-bold text-emerald-600">0</p>
             </div>
         </div>
     </div>
@@ -124,6 +217,9 @@
                                 Submitted At
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Actions
                             </th>
                         </tr>
@@ -136,14 +232,71 @@
         </div>
     </div>
 
-    <!-- Image Modal -->
-    <div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 p-4" style="display: none;">
-        <div class="flex items-center justify-center min-h-screen">
-            <div class="relative max-w-4xl max-h-full">
-                <button id="closeModal" class="absolute top-2 right-2 text-white hover:text-gray-300 text-3xl font-bold z-10 w-10 h-10 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
-                    &times;
+    <!-- Enhanced Lightbox Modal -->
+    <div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50" style="display: none;">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="relative max-w-7xl max-h-full w-full">
+                <!-- Close Button -->
+                <button id="closeModal" class="absolute top-4 right-4 text-white hover:text-gray-300 text-4xl font-bold z-20 w-12 h-12 flex items-center justify-center bg-black bg-opacity-60 rounded-full transition-all duration-200 hover:bg-opacity-80">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
                 </button>
-                <img id="modalImage" src="" alt="Full size image" class="max-w-full max-h-screen object-contain rounded-lg">
+                
+                <!-- Previous Button -->
+                <button id="prevImage" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 text-3xl font-bold z-20 w-12 h-12 flex items-center justify-center bg-black bg-opacity-60 rounded-full transition-all duration-200 hover:bg-opacity-80">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                
+                <!-- Next Button -->
+                <button id="nextImage" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 text-3xl font-bold z-20 w-12 h-12 flex items-center justify-center bg-black bg-opacity-60 rounded-full transition-all duration-200 hover:bg-opacity-80">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+                
+                <!-- Image Container -->
+                <div class="flex items-center justify-center h-screen">
+                    <div class="relative">
+                        <img id="modalImage" src="" alt="Full size image" class="max-w-full max-h-screen object-contain transition-opacity duration-300">
+                        
+                        <!-- Loading Spinner -->
+                        <div id="imageLoader" class="absolute inset-0 items-center justify-center bg-black bg-opacity-50 hidden">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Image Info -->
+                <div id="imageInfo" class="absolute bottom-4 left-4 right-4 text-white bg-black bg-opacity-60 rounded-lg p-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 id="imageTitle" class="text-lg font-semibold mb-1"></h3>
+                            <p id="imageDescription" class="text-sm text-gray-300"></p>
+                        </div>
+                        <div class="text-right">
+                            <p id="imageCounter" class="text-sm text-gray-300"></p>
+                            <div class="flex gap-2 mt-2">
+                                <!-- Download Button -->
+                                <button id="downloadImage" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors duration-200">
+                                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V13"></path>
+                                    </svg>
+                                    Download
+                                </button>
+                                <!-- Zoom Toggle -->
+                                <button id="zoomToggle" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm transition-colors duration-200">
+                                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                    Zoom
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -169,16 +322,165 @@
 
     <script type="module">
         import { storage, databases } from './lib/appwrite.js';
+        import { Query } from "appwrite";
         
         // Configuration
         const BUCKET_ID = import.meta.env.VITE_APPWRITE_BUCKET_ID;
         const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
         const COLLECTION_ID = import.meta.env.VITE_APPWRITE_COLLECTION_ID;
+        const USER_ROLES_COLLECTION_ID = import.meta.env.VITE_APPWRITE_USER_ROLES_COLLECTION_ID;
+
+        let currentLoggedInJudge = null;
+        let evaluationStatus = {}; // Track evaluation status by submission ID
+        let isInitialLoad = true; // Track if this is the first data load
+
+        // Instant popup notification system
+        function showInstantPopup(message, type = 'info') {
+            // Remove any existing popups
+            const existingPopup = document.getElementById('instantPopup');
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+
+            // Create popup element
+            const popup = document.createElement('div');
+            popup.id = 'instantPopup';
+            popup.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg border-l-4 transform transition-all duration-300 ease-in-out translate-x-full`;
+            
+            // Set colors based on type
+            let bgColor, borderColor, textColor, iconSvg;
+            switch(type) {
+                case 'success':
+                    bgColor = 'bg-green-50';
+                    borderColor = 'border-green-400';
+                    textColor = 'text-green-800';
+                    iconSvg = `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>`;
+                    break;
+                case 'error':
+                    bgColor = 'bg-red-50';
+                    borderColor = 'border-red-400';
+                    textColor = 'text-red-800';
+                    iconSvg = `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>`;
+                    break;
+                case 'warning':
+                    bgColor = 'bg-yellow-50';
+                    borderColor = 'border-yellow-400';
+                    textColor = 'text-yellow-800';
+                    iconSvg = `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>`;
+                    break;
+                default:
+                    bgColor = 'bg-blue-50';
+                    borderColor = 'border-blue-400';
+                    textColor = 'text-blue-800';
+                    iconSvg = `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>`;
+            }
+
+            popup.className += ` ${bgColor} ${borderColor} ${textColor}`;
+            
+            popup.innerHTML = `
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        ${iconSvg}
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <p class="text-sm font-medium">${message}</p>
+                    </div>
+                    <div class="ml-4 flex-shrink-0">
+                        <button class="inline-flex text-gray-400 hover:text-gray-600 focus:outline-none" onclick="this.parentElement.parentElement.parentElement.remove()">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Add to document
+            document.body.appendChild(popup);
+
+            // Animate in
+            setTimeout(() => {
+                popup.classList.remove('translate-x-full');
+            }, 100);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (popup && popup.parentNode) {
+                    popup.classList.add('translate-x-full');
+                    setTimeout(() => {
+                        if (popup && popup.parentNode) {
+                            popup.remove();
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
 
         let submissionsData = [];
         let filteredData = [];
         let currentSearchTerm = '';
         let currentFilter = '';
+        let currentStatusFilter = '';
+        let currentImageIndex = 0;
+        let currentImageGallery = [];
+        let isZoomed = false;
+
+        // Authentication functions
+        async function authenticateJudge(username) {
+            try {
+                // Check user credentials in the user_roles collection
+                const response = await databases.listDocuments(
+                    DATABASE_ID,
+                    USER_ROLES_COLLECTION_ID,
+                    [
+                        Query.equal('unique_user_name', username),
+                        Query.equal('user_role', 'judge')
+                    ]
+                );
+
+                if (response.documents.length === 0) {
+                    throw new Error('Invalid username or insufficient permissions');
+                }
+
+                const user = response.documents[0];
+                currentLoggedInJudge = user;
+                return true;
+            } catch (error) {
+                console.error('Authentication error:', error);
+                throw error;
+            }
+        }
+
+        function showAuthScreen() {
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('dashboardContent').classList.add('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('dashboardContent').classList.remove('hidden');
+        }
+
+        function logout() {
+            currentLoggedInJudge = null;
+            showAuthScreen();
+            document.getElementById('judgeLoginForm').reset();
+        }
+
+        // Check authentication on page load
+        function checkAuthentication() {
+            // For simplicity, we'll require login each time
+            // In production, you might use session storage or tokens
+            showAuthScreen();
+        }
 
         // Helper function to get image URL from Appwrite Storage
         function getImageUrl(fileId) {
@@ -198,13 +500,22 @@
         const imageModal = document.getElementById('imageModal');
         const modalImage = document.getElementById('modalImage');
         const closeModal = document.getElementById('closeModal');
+        const prevImage = document.getElementById('prevImage');
+        const nextImage = document.getElementById('nextImage');
+        const imageLoader = document.getElementById('imageLoader');
+        const imageInfo = document.getElementById('imageInfo');
+        const imageTitle = document.getElementById('imageTitle');
+        const imageDescription = document.getElementById('imageDescription');
+        const imageCounter = document.getElementById('imageCounter');
+        const downloadImage = document.getElementById('downloadImage');
+        const zoomToggle = document.getElementById('zoomToggle');
         const detailsModal = document.getElementById('detailsModal');
         const detailsContent = document.getElementById('detailsContent');
         const closeDetailsModal = document.getElementById('closeDetailsModal');
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            fetchData();
+            checkAuthentication();
             setupEventListeners();
         });
 
@@ -220,26 +531,72 @@
                 currentFilter = this.value;
                 filterAndDisplayData();
             });
+            
+            // Status filter
+            document.getElementById('statusFilter').addEventListener('change', function() {
+                currentStatusFilter = this.value;
+                filterAndDisplayData();
+            });
 
             // Fetch button
             fetchBtn.addEventListener('click', fetchData);
 
-            // Modal close buttons
-            closeModal.addEventListener('click', () => {
-                imageModal.classList.add('hidden');
-                imageModal.style.display = 'none';
+            // Event delegation for dynamically created elements
+            dataTableBody.addEventListener('click', function(e) {
+                // Handle image clicks
+                if (e.target.tagName === 'IMG' && e.target.dataset.imageUrl) {
+                    const imageUrl = e.target.dataset.imageUrl;
+                    const imageType = e.target.dataset.imageType;
+                    const submissionId = e.target.dataset.submissionId;
+                    showImageModal(imageUrl, `${submissionId} - ${imageType}`, `Problem Statement: ${submissionId}`);
+                }
+                
+                // Handle button clicks
+                if (e.target.tagName === 'BUTTON') {
+                    const action = e.target.dataset.action;
+                    const submissionId = e.target.dataset.submissionId;
+                    const documentId = e.target.dataset.documentId;
+                    
+                    if (action === 'details') {
+                        showDetails(submissionId);
+                    } else if (action === 'delete') {
+                        deleteSubmission(submissionId);
+                    } else if (action === 'mark-evaluated') {
+                        markAsEvaluated(submissionId, documentId, e.target);
+                    }
+                }
             });
+
+            // Event delegation for details modal images
+            detailsContent.addEventListener('click', function(e) {
+                if (e.target.tagName === 'IMG' && e.target.dataset.imageUrl) {
+                    const imageUrl = e.target.dataset.imageUrl;
+                    const imageType = e.target.dataset.imageType;
+                    const submissionId = e.target.dataset.submissionId;
+                    showImageModal(imageUrl, `${submissionId} - ${imageType}`, `Problem Statement: ${submissionId}`);
+                }
+            });
+
+            // Modal close buttons
+            closeModal.addEventListener('click', closeLightbox);
             
             closeDetailsModal.addEventListener('click', () => {
                 detailsModal.classList.add('hidden');
                 detailsModal.style.display = 'none';
             });
 
+            // Lightbox navigation
+            prevImage.addEventListener('click', showPreviousImage);
+            nextImage.addEventListener('click', showNextImage);
+            
+            // Download and zoom functionality
+            downloadImage.addEventListener('click', downloadCurrentImage);
+            zoomToggle.addEventListener('click', toggleZoom);
+
             // Close modals on outside click
             imageModal.addEventListener('click', function(e) {
                 if (e.target === this) {
-                    this.classList.add('hidden');
-                    this.style.display = 'none';
+                    closeLightbox();
                 }
             });
 
@@ -250,6 +607,47 @@
                 }
             });
         }
+
+        // Authentication event handlers
+        document.getElementById('judgeLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('judgeUsername').value.trim();
+            const loginBtn = document.getElementById('judgeLoginBtn');
+            const loginBtnText = document.getElementById('judgeLoginBtnText');
+            const loginSpinner = document.getElementById('judgeLoginSpinner');
+            const authError = document.getElementById('judgeAuthError');
+            
+            if (!username) {
+                authError.textContent = 'Please enter your username.';
+                authError.classList.remove('hidden');
+                return;
+            }
+            
+            // Show loading state
+            loginBtn.disabled = true;
+            loginBtnText.textContent = 'Signing in...';
+            loginSpinner.classList.remove('hidden');
+            authError.classList.add('hidden');
+            
+            try {
+                await authenticateJudge(username);
+                showDashboard();
+                // Initialize dashboard after successful login
+                fetchData();
+            } catch (error) {
+                authError.textContent = error.message || 'Login failed. Please try again.';
+                authError.classList.remove('hidden');
+            } finally {
+                // Reset button state
+                loginBtn.disabled = false;
+                loginBtnText.textContent = 'Sign in as Judge';
+                loginSpinner.classList.add('hidden');
+            }
+        });
+
+        // Judge logout button handler  
+        document.getElementById('judgeLogoutBtn').addEventListener('click', logout);
 
         async function fetchData() {
             showLoading();
@@ -272,7 +670,10 @@
                     submittedAt: doc.submittedAt,
                     documentId: doc.$id,
                     logoFileId: doc.logoFileId,
-                    posterFileId: doc.posterFileId
+                    posterFileId: doc.posterFileId,
+                    isEvaluated: doc.isEvaluated || false,
+                    evaluatedBy: doc.evaluatedBy || null,
+                    evaluatedAt: doc.evaluatedAt || null
                 }));
                 
                 filteredData = [...submissionsData];
@@ -282,22 +683,19 @@
                 
                 fetchBtnText.textContent = 'Refresh Data';
                 
+                // Show subtle refresh notification only if it's not the initial load
+                if (!isInitialLoad) {
+                    showInstantPopup('Data refreshed successfully', 'success');
+                }
+                isInitialLoad = false;
+                
             } catch (error) {
                 console.error('Error fetching data:', error);
                 hideLoading();
                 showNoData();
                 
-                // Show error message to user
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'max-w-6xl mx-auto px-4 mb-6';
-                errorDiv.innerHTML = `
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                        <strong>Error:</strong> Failed to fetch submissions. ${error.message}
-                    </div>
-                `;
-                document.body.insertBefore(errorDiv, document.getElementById('loadingSpinner'));
-                
-                setTimeout(() => errorDiv.remove(), 5000);
+                // Show error popup
+                showInstantPopup(`Failed to fetch submissions: ${error.message}`, 'error');
             }
         }
 
@@ -330,7 +728,12 @@
                 
                 const matchesFilter = !currentFilter || item.problemStatement === currentFilter;
                 
-                return matchesSearch && matchesFilter;
+                const matchesStatusFilter = !currentStatusFilter || 
+                    (currentStatusFilter === 'pending' && !item.isEvaluated) ||
+                    (currentStatusFilter === 'evaluated' && item.isEvaluated) ||
+                    (currentStatusFilter === 'my-evaluations' && item.isEvaluated && item.evaluatedBy === currentLoggedInJudge?.unique_user_name);
+                
+                return matchesSearch && matchesFilter && matchesStatusFilter;
             });
 
             displayData();
@@ -338,14 +741,16 @@
 
         function updateStatistics() {
             const total = submissionsData.length;
-            const healthcare = submissionsData.filter(item => item.problemStatement === 'Healthcare Innovation').length;
-            const education = submissionsData.filter(item => item.problemStatement === 'Educational Technology').length;
-            const environment = submissionsData.filter(item => item.problemStatement === 'Environmental Sustainability').length;
+            const evaluated = submissionsData.filter(item => item.isEvaluated).length;
+            const problemStatement1 = submissionsData.filter(item => item.problemStatement === 'problemstatement1').length;
+            const problemStatement2 = submissionsData.filter(item => item.problemStatement === 'problemstatement2').length;
+            const problemStatement3 = submissionsData.filter(item => item.problemStatement === 'problemstatement3').length;
 
             document.getElementById('totalCount').textContent = total;
-            document.getElementById('healthcareCount').textContent = healthcare;
-            document.getElementById('educationCount').textContent = education;
-            document.getElementById('environmentCount').textContent = environment;
+            document.getElementById('evaluatedCount').textContent = evaluated;
+            document.getElementById('pr1').textContent = problemStatement1;
+            document.getElementById('pr2').textContent = problemStatement2;
+            document.getElementById('pr3').textContent = problemStatement3;
         }
 
         function displayData() {
@@ -373,23 +778,75 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <img src="${item.logoUrl}" alt="Logo" class="h-12 w-12 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity" 
-                             onclick="showImageModal('${item.logoUrl}')"
+                             data-image-url="${item.logoUrl}" data-image-type="logo" data-submission-id="${item.id}"
                              onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;48&quot; height=&quot;48&quot; viewBox=&quot;0 0 48 48&quot;><rect width=&quot;48&quot; height=&quot;48&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;24&quot; y=&quot;28&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;10&quot;>ERROR</text></svg>'">
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <img src="${item.posterUrl}" alt="Poster" class="h-12 w-12 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity" 
-                             onclick="showImageModal('${item.posterUrl}')"
+                             data-image-url="${item.posterUrl}" data-image-type="poster" data-submission-id="${item.id}"
                              onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;48&quot; height=&quot;48&quot; viewBox=&quot;0 0 48 48&quot;><rect width=&quot;48&quot; height=&quot;48&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;24&quot; y=&quot;28&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;10&quot;>ERROR</text></svg>'">
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-900">${formatDate(item.submittedAt)}</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button onclick="showDetails('${item.id}')" 
-                                class="text-blue-600 hover:text-blue-900 mr-3">View Details</button>
-                        <button onclick="deleteSubmission('${item.id}')" 
-                                class="text-red-600 hover:text-red-900">Delete</button>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            ${item.isEvaluated ? 
+                                `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Evaluated
+                                </span>` : 
+                                `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Pending
+                                </span>`
+                            }
+                        </div>
+                        ${item.isEvaluated && item.evaluatedBy ? 
+                            `<div class="text-xs text-gray-500 mt-1">
+                                <div>By: <strong>${item.evaluatedBy}</strong></div>
+                                <div>At: ${formatDate(item.evaluatedAt)}</div>
+                            </div>` : ''
+                        }
                     </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        ${!item.isEvaluated ? 
+                            `<button type="button" 
+                                class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200" 
+                                data-action="mark-evaluated" 
+                                data-submission-id="${item.id}"
+                                data-document-id="${item.documentId}">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Mark as Checked
+                            </button>` : 
+                            (item.evaluatedBy === currentLoggedInJudge?.unique_user_name ? 
+                                `<button type="button" 
+                                    class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-gray-100 cursor-not-allowed opacity-50" 
+                                    disabled>
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    You Checked This
+                                </button>` :
+                                `<button type="button" 
+                                    class="inline-flex items-center px-3 py-1.5 border border-red-300 text-xs font-medium rounded-md text-red-700 bg-red-50 cursor-not-allowed opacity-75" 
+                                    disabled
+                                    title="Already evaluated by ${item.evaluatedBy}">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Checked by ${item.evaluatedBy}
+                                </button>`
+                            )
+                        }
+                    </td>
+                   
                 `;
                 
                 dataTableBody.appendChild(row);
@@ -401,10 +858,159 @@
             return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
         }
 
-        function showImageModal(imageUrl) {
-            modalImage.src = imageUrl;
+        function showImageModal(imageUrl, title = '', description = '', imageType = '') {
+            console.log('showImageModal called with:', { imageUrl, title, description, imageType });
+            
+            // Create gallery from current filtered data
+            currentImageGallery = [];
+            filteredData.forEach(item => {
+                currentImageGallery.push({
+                    url: item.logoUrl,
+                    title: `${item.id} - Logo`,
+                    description: `Problem Statement: ${item.problemStatement}`,
+                    type: 'logo',
+                    submissionId: item.id
+                });
+                currentImageGallery.push({
+                    url: item.posterUrl,
+                    title: `${item.id} - Poster`,
+                    description: `Problem Statement: ${item.problemStatement}`,
+                    type: 'poster',
+                    submissionId: item.id
+                });
+            });
+            
+            console.log('Gallery created with', currentImageGallery.length, 'images');
+            
+            // Find current image index
+            currentImageIndex = currentImageGallery.findIndex(img => img.url === imageUrl);
+            if (currentImageIndex === -1) currentImageIndex = 0;
+            
+            console.log('Current image index:', currentImageIndex);
+            
+            showImageAtIndex(currentImageIndex);
             imageModal.classList.remove('hidden');
             imageModal.style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            
+            console.log('Modal should be visible now');
+        }
+
+        function showImageAtIndex(index) {
+            console.log('showImageAtIndex called with index:', index);
+            
+            if (!currentImageGallery.length) {
+                console.log('No images in gallery');
+                return;
+            }
+            
+            currentImageIndex = index;
+            const imageData = currentImageGallery[index];
+            
+            console.log('Loading image:', imageData);
+            
+            // Show loading spinner
+            imageLoader.classList.remove('hidden');
+            imageLoader.style.display = 'flex';
+            modalImage.style.opacity = '0';
+            
+            // Load image
+            const img = new Image();
+            img.onload = function() {
+                modalImage.src = imageData.url;
+                modalImage.style.opacity = '1';
+                imageLoader.classList.add('hidden');
+                imageLoader.style.display = 'none';
+                
+                // Update image info
+                imageTitle.textContent = imageData.title;
+                imageDescription.textContent = imageData.description;
+                imageCounter.textContent = `${index + 1} of ${currentImageGallery.length}`;
+                
+                // Update navigation buttons
+                prevImage.style.display = currentImageGallery.length > 1 ? 'flex' : 'none';
+                nextImage.style.display = currentImageGallery.length > 1 ? 'flex' : 'none';
+                
+                // Reset zoom
+                isZoomed = false;
+                modalImage.style.transform = 'scale(1)';
+                modalImage.style.cursor = 'zoom-in';
+                zoomToggle.innerHTML = `
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Zoom In
+                `;
+            };
+            
+            img.onerror = function() {
+                modalImage.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="%23f3f4f6"/><text x="200" y="160" text-anchor="middle" fill="%236b7280" font-family="Arial" font-size="20">Image Not Found</text></svg>';
+                modalImage.style.opacity = '1';
+                imageLoader.classList.add('hidden');
+                imageLoader.style.display = 'none';
+                
+                imageTitle.textContent = 'Image Not Found';
+                imageDescription.textContent = 'The image could not be loaded.';
+                imageCounter.textContent = `${index + 1} of ${currentImageGallery.length}`;
+            };
+            
+            img.src = imageData.url;
+        }
+
+        function showPreviousImage() {
+            if (currentImageGallery.length === 0) return;
+            const newIndex = currentImageIndex > 0 ? currentImageIndex - 1 : currentImageGallery.length - 1;
+            showImageAtIndex(newIndex);
+        }
+
+        function showNextImage() {
+            if (currentImageGallery.length === 0) return;
+            const newIndex = currentImageIndex < currentImageGallery.length - 1 ? currentImageIndex + 1 : 0;
+            showImageAtIndex(newIndex);
+        }
+
+        function closeLightbox() {
+            imageModal.classList.add('hidden');
+            imageModal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore background scrolling
+            isZoomed = false;
+            modalImage.style.transform = 'scale(1)';
+        }
+
+        function downloadCurrentImage() {
+            if (!currentImageGallery.length) return;
+            
+            const imageData = currentImageGallery[currentImageIndex];
+            const link = document.createElement('a');
+            link.href = imageData.url;
+            link.download = `${imageData.submissionId}_${imageData.type}.jpg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function toggleZoom() {
+            if (isZoomed) {
+                modalImage.style.transform = 'scale(1)';
+                modalImage.style.cursor = 'zoom-in';
+                isZoomed = false;
+                zoomToggle.innerHTML = `
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Zoom In
+                `;
+            } else {
+                modalImage.style.transform = 'scale(2)';
+                modalImage.style.cursor = 'zoom-out';
+                isZoomed = true;
+                zoomToggle.innerHTML = `
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Zoom Out
+                `;
+            }
         }
 
         function showDetails(id) {
@@ -433,13 +1039,13 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Logo (${item.logoFileName || 'logo.jpg'})</label>
                             <img src="${item.logoUrl}" alt="Logo" class="w-full h-32 object-cover rounded border cursor-pointer hover:opacity-75 transition-opacity" 
-                                 onclick="showImageModal('${item.logoUrl}')"
+                                 data-image-url="${item.logoUrl}" data-image-type="logo" data-submission-id="${item.id}"
                                  onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;200&quot; height=&quot;128&quot; viewBox=&quot;0 0 200 128&quot;><rect width=&quot;200&quot; height=&quot;128&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;100&quot; y=&quot;70&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;14&quot;>Image Not Found</text></svg>'">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Poster (${item.posterFileName || 'poster.jpg'})</label>
                             <img src="${item.posterUrl}" alt="Poster" class="w-full h-32 object-cover rounded border cursor-pointer hover:opacity-75 transition-opacity" 
-                                 onclick="showImageModal('${item.posterUrl}')"
+                                 data-image-url="${item.posterUrl}" data-image-type="poster" data-submission-id="${item.id}"
                                  onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;200&quot; height=&quot;128&quot; viewBox=&quot;0 0 200 128&quot;><rect width=&quot;200&quot; height=&quot;128&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;100&quot; y=&quot;70&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;14&quot;>Image Not Found</text></svg>'">
                         </div>
                     </div>
@@ -496,19 +1102,132 @@
             }
         }
 
+        async function markAsEvaluated(submissionId, documentId, buttonElement) {
+            if (!currentLoggedInJudge) {
+                showInstantPopup('You must be logged in to mark submissions.', 'error');
+                return;
+            }
+
+            // Check if submission is already evaluated
+            const submission = submissionsData.find(item => item.id === submissionId);
+            if (submission && submission.isEvaluated) {
+                showInstantPopup(`This submission has already been evaluated by: ${submission.evaluatedBy}`, 'warning');
+                // Refresh data to get latest status
+                fetchData();
+                return;
+            }
+
+            if (confirm('Are you sure you want to mark this submission as evaluated? This action cannot be undone.')) {
+                try {
+                    // Show loading state on button
+                    const originalContent = buttonElement.innerHTML;
+                    buttonElement.disabled = true;
+                    buttonElement.innerHTML = `
+                        <svg class="animate-spin w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Marking...
+                    `;
+
+                    // First, check current status from database to prevent race conditions
+                    const currentDoc = await databases.getDocument(
+                        DATABASE_ID,
+                        COLLECTION_ID,
+                        documentId
+                    );
+
+                    // Double-check if someone else already marked it
+                    if (currentDoc.isEvaluated) {
+                        showInstantPopup(`This submission has already been evaluated by: ${currentDoc.evaluatedBy}`, 'warning');
+                        // Refresh data to get latest status
+                        fetchData();
+                        return;
+                    }
+
+                    // Update the document in Appwrite
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        COLLECTION_ID,
+                        documentId,
+                        {
+                            isEvaluated: true,
+                            evaluatedBy: currentLoggedInJudge.unique_user_name,
+                            evaluatedAt: new Date().toISOString()
+                        }
+                    );
+
+                    // Update local data
+                    const submission = submissionsData.find(item => item.id === submissionId);
+                    if (submission) {
+                        submission.isEvaluated = true;
+                        submission.evaluatedBy = currentLoggedInJudge.unique_user_name;
+                        submission.evaluatedAt = new Date().toISOString();
+                    }
+
+                    // Refresh the display
+                    filterAndDisplayData();
+                    updateStatistics();
+
+                    // Show success popup
+                    showInstantPopup('Submission marked as evaluated successfully!', 'success');
+
+                } catch (error) {
+                    console.error('Error marking submission as evaluated:', error);
+                    
+                    // Reset button state
+                    buttonElement.disabled = false;
+                    buttonElement.innerHTML = originalContent;
+                    
+                    // Show error popup
+                    showInstantPopup(`Failed to mark submission as evaluated: ${error.message}`, 'error');
+                    
+                    // Refresh data in case of concurrent modification
+                    fetchData();
+                }
+            }
+        }
+
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                imageModal.classList.add('hidden');
-                imageModal.style.display = 'none';
+                closeLightbox();
                 detailsModal.classList.add('hidden');
                 detailsModal.style.display = 'none';
             }
+            
+            // Lightbox navigation
+            if (!imageModal.classList.contains('hidden')) {
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        showPreviousImage();
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        showNextImage();
+                        break;
+                    case 'Space':
+                        e.preventDefault();
+                        toggleZoom();
+                        break;
+                    case 'd':
+                    case 'D':
+                        e.preventDefault();
+                        downloadCurrentImage();
+                        break;
+                }
+            }
+            
             if (e.ctrlKey && e.key === 'f') {
                 e.preventDefault();
                 searchInput.focus();
             }
         });
     </script>
+    </div> <!-- End dashboardContent -->
+
+
+    </div> <!-- End dashboardContent -->
 </body>
 </html>

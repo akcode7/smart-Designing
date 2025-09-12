@@ -7,30 +7,69 @@
     <link rel="stylesheet" href="./style/app.css">
 </head>
 <body class="bg-gray-50 min-h-screen py-8">
-   
-
-    <div class="container mx-auto max-w-2xl px-4">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="container mx-auto max-w-md px-4">
         <div class="bg-white rounded-lg shadow-lg p-8">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">Submission Form</h1>
-            <p class="text-gray-600 mb-8">Please fill out all required fields to submit your entry.</p>
+            <div class="text-center mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Participant Login</h1>
+                <p class="text-gray-600">Enter your unique ID to access the submission form</p>
+            </div>
             
-            <form id="submissionForm" class="space-y-6">
-                <!-- Unique ID Field -->
+            <form id="loginForm" class="space-y-4">
                 <div>
-                    <label for="uniqueId" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="loginUniqueId" class="block text-sm font-medium text-gray-700 mb-2">
                         Unique ID <span class="text-red-500">*</span>
                     </label>
                     <input 
                         type="text" 
-                        id="uniqueId" 
-                        name="uniqueId" 
+                        id="loginUniqueId" 
+                        name="loginUniqueId" 
                         required
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Enter your unique ID"
+                        placeholder="Enter your assigned unique ID"
                     >
-                    <p class="mt-1 text-sm text-gray-500">This should be a unique identifier assigned to you.</p>
+                    <div id="loginError" class="mt-2 text-sm text-red-600 hidden"></div>
                 </div>
 
+                <button 
+                    type="submit" 
+                    id="loginBtn"
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                    <span id="loginBtnText">Login</span>
+                    <svg id="loginSpinner" class="hidden animate-spin -mr-1 ml-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-500">
+                    Don't have a unique ID? Contact the Student Coordinator.
+                </p>
+               
+            </div>
+        </div>
+    </div>
+
+    <!-- Submission Form (Hidden initially) -->
+    <div id="submissionScreen" class="hidden container mx-auto max-w-2xl px-4">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">Submission Form</h1>
+                    <p class="text-gray-600">Welcome, <span id="loggedInUserId" class="font-medium text-blue-600"></span></p>
+                </div>
+                <button 
+                    id="logoutBtn"
+                    class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                    Logout
+                </button>
+            </div>
+            
+            <form id="submissionForm" class="space-y-6">
                 <!-- Problem Statement Selection -->
                 <div>
                     <label for="problemStatement" class="block text-sm font-medium text-gray-700 mb-2">
@@ -43,10 +82,9 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                         <option value="">Select a problem statement</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                       
+                        <option value="problemstatement1">Problem Statement 1</option>
+                        <option value="problemstatement2">Problem Statement 2</option>
+                        <option value="problemstatement3">Problem Statement 3</option>
                     </select>
                 </div>
 
@@ -75,7 +113,7 @@
                                 </label>
                                 <p class="pl-1">or drag and drop</p>
                             </div>
-                            <p class="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                            <p class="text-xs text-gray-500">PNG, JPG, PDF not exceeding 5MB</p>
                         </div>
                     </div>
                     <div id="logoPreview" class="mt-3 hidden">
@@ -110,7 +148,7 @@
                                 </label>
                                 <p class="pl-1">or drag and drop</p>
                             </div>
-                            <p class="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                            <p class="text-xs text-gray-500">PNG, JPG, PDF not exceeding 5MB</p>
                         </div>
                     </div>
                     <div id="posterPreview" class="mt-3 hidden">
@@ -129,6 +167,7 @@
                     >
                         Submit Form
                     </button>
+                    <p id="submitHelp" class="mt-2 text-sm text-gray-500 hidden">Please ensure your unique ID is valid before submitting.</p>
                 </div>
             </form>
 
@@ -144,18 +183,271 @@
         </div>
     </div>
 
+    <!-- Submission View Screen (for users who already submitted) -->
+    <div id="submissionViewScreen" class="hidden container mx-auto max-w-4xl px-4">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">Your Submission</h1>
+                    <p class="text-gray-600">Welcome back, <span id="viewLoggedInUserId" class="font-medium text-blue-600"></span></p>
+                    <p class="text-sm text-green-600 mt-1">✅ Your submission has been recorded successfully</p>
+                </div>
+                <button 
+                    id="viewLogoutBtn"
+                    class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                    Logout
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Submission Details -->
+                <div class="space-y-6">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Submission Details</h2>
+                        
+                        <div class="bg-gray-50 rounded-lg p-4 space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Unique ID</label>
+                                <p id="viewUniqueId" class="mt-1 text-sm text-gray-900 font-mono bg-white px-3 py-2 rounded border"></p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Problem Statement</label>
+                                <p id="viewProblemStatement" class="mt-1 text-sm text-gray-900 bg-white px-3 py-2 rounded border"></p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Submission Date</label>
+                                <p id="viewSubmissionDate" class="mt-1 text-sm text-gray-900 bg-white px-3 py-2 rounded border"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-3">
+                       
+                        
+                        <p class="text-xs text-gray-500 text-center">
+                            Note: You cannot modify your submission after it has been submitted.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Images Display -->
+                <div class="space-y-6">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Uploaded Images</h2>
+                        
+                        <!-- Logo Image -->
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                            <h3 class="text-sm font-medium text-gray-700 mb-3">Logo Image</h3>
+                            <div class="relative">
+                                <img 
+                                    id="viewLogoImage" 
+                                    src="" 
+                                    alt="Logo" 
+                                    class="w-full h-48 object-contain bg-white rounded border cursor-pointer hover:opacity-90 transition-opacity"
+                                    onclick="openImageModal(this.src, 'Logo Image')"
+                                >
+                                <div class="mt-2 flex justify-between items-center">
+                                    <span id="viewLogoFileName" class="text-xs text-gray-500"></span>
+                                  
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Poster Image -->
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="text-sm font-medium text-gray-700 mb-3">Poster Image</h3>
+                            <div class="relative">
+                                <img 
+                                    id="viewPosterImage" 
+                                    src="" 
+                                    alt="Poster" 
+                                    class="w-full h-48 object-contain bg-white rounded border cursor-pointer hover:opacity-90 transition-opacity"
+                                    onclick="openImageModal(this.src, 'Poster Image')"
+                                >
+                                <div class="mt-2 flex justify-between items-center">
+                                    <span id="viewPosterFileName" class="text-xs text-gray-500"></span>
+                                  
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal for Full View -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 items-center justify-center z-50 hidden">
+        <div class="max-w-4xl max-h-full p-4">
+            <div class="relative">
+                <img id="modalImage" src="" alt="" class="max-w-full max-h-full object-contain">
+                <button 
+                    onclick="closeImageModal()"
+                    class="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+                <div class="absolute bottom-4 left-4 text-white bg-black bg-opacity-50 px-3 py-1 rounded">
+                    <span id="modalImageTitle"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="./lib/appwrite.js"></script>
     <script type="module">
         import { storage, databases } from './lib/appwrite.js';
-        import { ID } from "appwrite";
+        import { ID, Query } from "appwrite";
 
         // Configuration
         const BUCKET_ID = import.meta.env.VITE_APPWRITE_BUCKET_ID;
         const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
         const COLLECTION_ID = import.meta.env.VITE_APPWRITE_COLLECTION_ID;
         
+        // Participant IDs collection
+        const PARTICIPANTS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_PARTICIPANTS_COLLECTION_ID;
+        
+        // Session management
+        let currentLoggedInUser = null;
+        
         // File size validation (5MB = 5242880 bytes)
         const MAX_FILE_SIZE = 5242880;
+
+        // Screen management functions
+        function showScreen(screenId) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('submissionScreen').classList.add('hidden');
+            document.getElementById('submissionViewScreen').classList.add('hidden');
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        // Login functionality
+        async function loginParticipant(uniqueId) {
+            try {
+                console.log('Attempting login for:', uniqueId);
+                console.log('Using DATABASE_ID:', DATABASE_ID);
+                console.log('Using PARTICIPANTS_COLLECTION_ID:', PARTICIPANTS_COLLECTION_ID);
+                
+                // Check if the unique ID exists in participants collection first
+                const participantsResponse = await databases.listDocuments(
+                    DATABASE_ID,
+                    PARTICIPANTS_COLLECTION_ID,
+                    [Query.equal('uniqueId', uniqueId)]
+                );
+
+                console.log('Participants query result:', participantsResponse);
+
+                if (participantsResponse.documents.length === 0) {
+                    return { success: false, error: 'Invalid unique ID. Please contact the administrator.' };
+                }
+
+                // Check if user has already submitted
+                const submissionsResponse = await databases.listDocuments(
+                    DATABASE_ID,
+                    COLLECTION_ID,
+                    [Query.equal('uniqueId', uniqueId)]
+                );
+
+                console.log('Submissions query result:', submissionsResponse);
+
+                // Valid participant - allow login regardless of submission status
+                currentLoggedInUser = uniqueId;
+                document.getElementById('loggedInUserId').textContent = uniqueId;
+                
+                // Check if user has already submitted
+                if (submissionsResponse.documents.length > 0) {
+                    // User has already submitted - show their submission instead of the form
+                    showUserSubmission(submissionsResponse.documents[0]);
+                } else {
+                    // New user - show the submission form
+                    showScreen('submissionScreen');
+                }
+                
+                return { success: true };
+            } catch (error) {
+                console.error('Login error:', error);
+                return { success: false, error: 'Error during login. Please try again.' };
+            }
+        }
+
+        // Show user's existing submission
+        async function showUserSubmission(submissionDoc) {
+            try {
+                // Populate submission details
+                document.getElementById('viewLoggedInUserId').textContent = submissionDoc.uniqueId;
+                document.getElementById('viewUniqueId').textContent = submissionDoc.uniqueId;
+                document.getElementById('viewProblemStatement').textContent = getProblemStatementLabel(submissionDoc.problemStatement);
+                document.getElementById('viewSubmissionDate').textContent = new Date(submissionDoc.$createdAt).toLocaleString();
+
+                // Load and display images
+                await loadSubmissionImages(submissionDoc);
+
+                // Show the submission view screen
+                showScreen('submissionViewScreen');
+            } catch (error) {
+                console.error('Error displaying submission:', error);
+                alert('Error loading your submission. Please try again.');
+            }
+        }
+
+        // Load submission images from storage
+        async function loadSubmissionImages(submissionDoc) {
+            try {
+                // Load logo image
+                const logoUrl = storage.getFileView(BUCKET_ID, submissionDoc.logoFileId);
+                document.getElementById('viewLogoImage').src = logoUrl;
+                document.getElementById('viewLogoFileName').textContent = submissionDoc.logoFileName || 'logo-image';
+
+                // Load poster image
+                const posterUrl = storage.getFileView(BUCKET_ID, submissionDoc.posterFileId);
+                document.getElementById('viewPosterImage').src = posterUrl;
+                document.getElementById('viewPosterFileName').textContent = submissionDoc.posterFileName || 'poster-image';
+
+              
+            } catch (error) {
+                console.error('Error loading images:', error);
+            }
+        }
+
+        // Helper function to get problem statement label
+        function getProblemStatementLabel(value) {
+            const labels = {
+                'problemstatement1': 'Problem Statement 1',
+                'problemstatement2': 'Problem Statement 2',
+                'problemstatement3': 'Problem Statement 3'
+            };
+            return labels[value] || value;
+        }
+
+      
+
+        // Image modal functions
+        function openImageModal(src, title) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('modalImageTitle');
+            
+            modalImage.src = src;
+            modalTitle.textContent = title;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Make modal functions global for onclick handlers
+        window.openImageModal = openImageModal;
+        window.closeImageModal = closeImageModal;
 
         function validateFileSize(file, errorElementId) {
             const errorElement = document.getElementById(errorElementId);
@@ -216,11 +508,18 @@
         document.getElementById('submissionForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            // Check if user is logged in
+            if (!currentLoggedInUser) {
+                alert('Please log in first.');
+                showScreen('loginScreen');
+                return;
+            }
+            
             const submitBtn = document.getElementById('submitBtn');
             const successMessage = document.getElementById('successMessage');
             
             // Get form data
-            const uniqueId = document.getElementById('uniqueId').value;
+            const uniqueId = currentLoggedInUser; // Use logged-in user's ID
             const problemStatement = document.getElementById('problemStatement').value;
             const logoFile = document.getElementById('logoImage').files[0];
             const posterFile = document.getElementById('posterImage').files[0];
@@ -232,9 +531,25 @@
             
             // Disable submit button and show loading state
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Uploading...';
+            submitBtn.textContent = 'Checking previous submissions...';
             
             try {
+                // Check if user has already submitted (one submission per participant)
+                const existingSubmissions = await databases.listDocuments(
+                    DATABASE_ID,
+                    COLLECTION_ID,
+                    [
+                        Query.equal('uniqueId', uniqueId)
+                    ]
+                );
+                
+                if (existingSubmissions.documents.length > 0) {
+                    alert('You have already submitted a form. Only one submission per participant is allowed.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Form';
+                    return;
+                }
+                
                 // Upload logo image to Appwrite Storage
                 submitBtn.textContent = 'Uploading logo...';
                 const logoResponse = await storage.createFile(
@@ -263,35 +578,53 @@
                     submittedAt: new Date().toISOString()
                 };
                 
-                await databases.createDocument(
+                const submissionDocument = await databases.createDocument(
                     DATABASE_ID,
                     COLLECTION_ID,
                     ID.unique(),
                     submissionData
                 );
                 
-                // Show success message
-                successMessage.innerHTML = `
-                    <div class="flex">
-                        <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                        <div>
-                            <p class="font-medium">Form submitted successfully!</p>
-                            <p class="text-sm">Your submission ID: ${uniqueId}</p>
-                            <p class="text-sm">Images uploaded and data saved</p>
-                        </div>
-                    </div>
-                `;
-                successMessage.classList.remove('hidden');
+                // Success! Redirect to submission view
+                submitBtn.textContent = 'Redirecting...';
                 
-                // Reset form
-                document.getElementById('submissionForm').reset();
-                document.getElementById('logoPreview').classList.add('hidden');
-                document.getElementById('posterPreview').classList.add('hidden');
-                
-                // Scroll to success message
-                successMessage.scrollIntoView({ behavior: 'smooth' });
+                // Small delay to show the redirecting message
+                setTimeout(async () => {
+                    try {
+                        // Fetch the newly created submission to display it
+                        const newSubmission = await databases.getDocument(
+                            DATABASE_ID,
+                            COLLECTION_ID,
+                            submissionDocument.$id
+                        );
+                        
+                        // Show the user's submission
+                        await showUserSubmission(newSubmission);
+                        
+                        // Reset form for any future use
+                        document.getElementById('submissionForm').reset();
+                        document.getElementById('logoPreview').classList.add('hidden');
+                        document.getElementById('posterPreview').classList.add('hidden');
+                        
+                    } catch (error) {
+                        console.error('Error fetching new submission:', error);
+                        // Fallback: show success message if we can't load the submission view
+                        successMessage.innerHTML = `
+                            <div class="flex">
+                                <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                                <div>
+                                    <p class="font-medium">Form submitted successfully!</p>
+                                    <p class="text-sm">Your submission ID: ${uniqueId}</p>
+                                    <p class="text-sm">Images uploaded and data saved</p>
+                                </div>
+                            </div>
+                        `;
+                        successMessage.classList.remove('hidden');
+                        successMessage.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 1000);
                 
             } catch (error) {
                 console.error('Submission error:', error);
@@ -360,6 +693,63 @@
         
         setupDragAndDrop(logoDropZone, document.getElementById('logoImage'), 'logoError', 'logoPreview', 'logoPreviewImg', 'logoFileName');
         setupDragAndDrop(posterDropZone, document.getElementById('posterImage'), 'posterError', 'posterPreview', 'posterPreviewImg', 'posterFileName');
+
+        // Login form event listener
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const uniqueId = document.getElementById('loginUniqueId').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
+            const loginBtnText = document.getElementById('loginBtnText');
+            const loginSpinner = document.getElementById('loginSpinner');
+            const loginError = document.getElementById('loginError');
+            
+            if (!uniqueId) {
+                loginError.textContent = 'Please enter your unique ID.';
+                loginError.classList.remove('hidden');
+                return;
+            }
+            
+            // Show loading state
+            loginBtn.disabled = true;
+            loginBtnText.textContent = 'Logging in...';
+            loginSpinner.classList.remove('hidden');
+            loginError.classList.add('hidden');
+            
+            try {
+                const result = await loginParticipant(uniqueId);
+                
+                if (result.success) {
+                    // Success - user is now logged in and redirected to submission form
+                } else {
+                    loginError.textContent = result.error;
+                    loginError.classList.remove('hidden');
+                }
+            } catch (error) {
+                loginError.textContent = 'An unexpected error occurred. Please try again.';
+                loginError.classList.remove('hidden');
+            } finally {
+                // Reset button state
+                loginBtn.disabled = false;
+                loginBtnText.textContent = 'Login';
+                loginSpinner.classList.add('hidden');
+            }
+        });
+
+        // Participant logout button
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            currentLoggedInUser = null;
+            document.getElementById('loginUniqueId').value = '';
+            document.getElementById('submissionForm').reset();
+            showScreen('loginScreen');
+        });
+
+        // Submission view logout button
+        document.getElementById('viewLogoutBtn').addEventListener('click', function() {
+            currentLoggedInUser = null;
+            document.getElementById('loginUniqueId').value = '';
+            showScreen('loginScreen');
+        });
     </script>
 </body>
 </html>

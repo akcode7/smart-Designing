@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Participant Management</title>
+    <link rel="stylesheet" href="./style/app.css">
+</head>
+<body class="bg-gray-50 min-h-screen py-8">
+    <!-- Authentication Screen -->
+    <div id="adminAuthScreen" class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <div class="mx-auto h-12 w-12 bg-green-600 rounded-lg flex items-center justify-center">
+                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Administrator Login
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Please enter your administrator credentials to access the admin dashboard
+                </p>
+            </div>
+            <form class="mt-8 space-y-6" id="adminLoginForm">
+                <div class="space-y-4">
+                    <div>
+                        <label for="adminUsername" class="block text-sm font-medium text-gray-700">Administrator Username</label>
+                        <input 
+                            id="adminUsername" 
+                            name="username" 
+                            type="text" 
+                            required 
+                            class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm" 
+                            placeholder="Enter your admin username"
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <button 
+                        type="submit" 
+                        id="adminLoginBtn"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span id="adminLoginBtnText">Sign in as Administrator</span>
+                        <svg id="adminLoginSpinner" class="hidden animate-spin -mr-1 ml-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="adminAuthError" class="hidden mt-4 p-4 rounded-md bg-red-100 text-red-700"></div>
+            </form>
+
+            <div class="text-center">
+                <a href="index.html" class="text-sm text-green-600 hover:text-green-500">
+                    Back to Main Application
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Content (Hidden initially) -->
+    <div id="adminDashboardContent" class="hidden">
+    <!-- Admin Panel -->
+    <div class="container mx-auto max-w-6xl px-4">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
+                    <p class="text-gray-600">Manage participants and view submissions</p>
+                </div>
+                <div class="flex space-x-4">
+                    <button 
+                        id="adminLogoutBtn"
+                        class="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800 border border-red-300 rounded-md hover:bg-red-50"
+                    >
+                        Logout
+                    </button>
+                    <a 
+                        href="judging.html"
+                        class="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 border border-blue-300 rounded-md hover:bg-blue-50"
+                    >
+                        View Submissions
+                    </a>
+                    <a 
+                        href="index.html"
+                        class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50"
+                    >
+                        Back to Login
+                    </a>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-blue-600">Total Participants</p>
+                            <p id="totalParticipants" class="text-2xl font-bold text-blue-900">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-green-600">Submissions</p>
+                            <p id="totalSubmissions" class="text-2xl font-bold text-green-900">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-8 w-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-yellow-600">Pending</p>
+                            <p id="pendingSubmissions" class="text-2xl font-bold text-yellow-900">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Bulk Upload Section -->
+                <div class="space-y-6">
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Bulk Upload Participants</h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label for="bulkUploadMethod" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Upload Method
+                                </label>
+                                <select 
+                                    id="bulkUploadMethod" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                >
+                                    <option value="text">Text Input (one ID per line)</option>
+                                    <option value="csv">CSV File Upload</option>
+                                </select>
+                            </div>
+
+                            <!-- Text Input Method -->
+                            <div id="textUploadSection">
+                                <label for="uniqueIdsText" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Enter Unique IDs (one per line)
+                                </label>
+                                <textarea 
+                                    id="uniqueIdsText" 
+                                    rows="8" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="participant001&#10;participant002&#10;participant003&#10;student-john-doe&#10;team-alpha-2024"
+                                ></textarea>
+                            </div>
+
+                            <!-- CSV Upload Method -->
+                            <div id="csvUploadSection" class="hidden">
+                                <label for="csvFile" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Upload CSV File
+                                </label>
+                                <input 
+                                    type="file" 
+                                    id="csvFile" 
+                                    accept=".csv,.txt" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                >
+                                <p class="mt-1 text-sm text-gray-500">CSV format: unique_id column or one ID per line</p>
+                            </div>
+
+                            <button 
+                                id="uploadUniqueIdsBtn"
+                                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <span id="uploadBtnText">Upload Participant IDs</span>
+                                <svg id="uploadSpinner" class="hidden animate-spin -mr-1 ml-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </button>
+
+                            <div id="uploadResult" class="hidden mt-4 p-4 rounded-md"></div>
+                        </div>
+                    </div>
+
+                    <!-- CSV Template Download -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h3 class="text-sm font-medium text-blue-800 mb-2">Need a CSV template?</h3>
+                        <p class="text-sm text-blue-600 mb-3">Download a sample CSV file to see the correct format.</p>
+                        <button 
+                            id="downloadTemplateBtn"
+                            class="inline-flex items-center px-3 py-2 border border-blue-300 shadow-sm text-sm leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Download CSV Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Participant Management -->
+                <div class="space-y-6">
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold text-gray-800">Participant Management</h2>
+                            <div class="flex space-x-2">
+                                <button 
+                                    id="refreshIdsBtn"
+                                    class="px-3 py-1 text-sm font-medium text-blue-600 hover:text-blue-800 border border-blue-300 rounded-md hover:bg-blue-50"
+                                >
+                                    Refresh
+                                </button>
+                                <button 
+                                    id="exportIdsBtn"
+                                    class="px-3 py-1 text-sm font-medium text-green-600 hover:text-green-800 border border-green-300 rounded-md hover:bg-green-50"
+                                >
+                                    Export
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Search and Filter -->
+                        <div class="mb-4 space-y-2">
+                            <input 
+                                type="text" 
+                                id="searchParticipants" 
+                                placeholder="Search participant IDs..." 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                            <div class="flex space-x-2">
+                                <select id="filterStatus" class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="all">All Participants</option>
+                                    <option value="submitted">Submitted</option>
+                                    <option value="pending">Pending</option>
+                                </select>
+                                <button 
+                                    id="clearFiltersBtn"
+                                    class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50"
+                                >
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-md max-h-96 overflow-y-auto">
+                            <div id="existingIdsList" class="divide-y divide-gray-100">
+                                <p class="p-4 text-gray-500">Loading participant IDs...</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex justify-between items-center text-sm text-gray-500">
+                            <span>Total IDs: <span id="totalIdsCount">0</span></span>
+                            <span>Showing: <span id="filteredIdsCount">0</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./lib/appwrite.js"></script>
+    <script type="module">
+        import { storage, databases } from './lib/appwrite.js';
+        import { ID, Query } from "appwrite";
+
+        // Configuration
+        const BUCKET_ID = import.meta.env.VITE_APPWRITE_BUCKET_ID;
+        const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
+        const COLLECTION_ID = import.meta.env.VITE_APPWRITE_COLLECTION_ID;
+        const PARTICIPANTS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_PARTICIPANTS_COLLECTION_ID;
+        const USER_ROLES_COLLECTION_ID = import.meta.env.VITE_APPWRITE_USER_ROLES_COLLECTION_ID;
+
+        // State
+        let allParticipants = [];
+        let allSubmissions = [];
+        let currentLoggedInAdmin = null;
+
+        // Authentication functions
+        async function authenticateAdmin(username) {
+            try {
+                // Check user credentials in the user_roles collection
+                const response = await databases.listDocuments(
+                    DATABASE_ID,
+                    USER_ROLES_COLLECTION_ID,
+                    [
+                        Query.equal('unique_user_name', username),
+                        Query.equal('user_role', 'administrator')
+                    ]
+                );
+
+                if (response.documents.length === 0) {
+                    throw new Error('Invalid username or insufficient permissions');
+                }
+
+                const user = response.documents[0];
+                currentLoggedInAdmin = user;
+                return true;
+            } catch (error) {
+                console.error('Authentication error:', error);
+                throw error;
+            }
+        }
+
+        function showAuthScreen() {
+            document.getElementById('adminAuthScreen').classList.remove('hidden');
+            document.getElementById('adminDashboardContent').classList.add('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('adminAuthScreen').classList.add('hidden');
+            document.getElementById('adminDashboardContent').classList.remove('hidden');
+        }
+
+        function logout() {
+            currentLoggedInAdmin = null;
+            showAuthScreen();
+            document.getElementById('adminLoginForm').reset();
+        }
+
+        // Check authentication on page load
+        function checkAuthentication() {
+            // For simplicity, we'll require login each time
+            // In production, you might use session storage or tokens
+            showAuthScreen();
+        }
+
+        // Initialize dashboard
+        async function initDashboard() {
+            checkAuthentication();
+        }
+
+        // Load dashboard data after authentication
+        async function loadDashboardData() {
+            await loadStatistics();
+            await loadExistingParticipantIds();
+        }
+
+        // Load statistics
+        async function loadStatistics() {
+            try {
+                const [participantsResponse, submissionsResponse] = await Promise.all([
+                    databases.listDocuments(DATABASE_ID, PARTICIPANTS_COLLECTION_ID),
+                    databases.listDocuments(DATABASE_ID, COLLECTION_ID)
+                ]);
+
+                allParticipants = participantsResponse.documents;
+                allSubmissions = submissionsResponse.documents;
+
+                const totalParticipants = allParticipants.length;
+                const totalSubmissions = allSubmissions.length;
+                const pendingSubmissions = totalParticipants - totalSubmissions;
+
+                document.getElementById('totalParticipants').textContent = totalParticipants;
+                document.getElementById('totalSubmissions').textContent = totalSubmissions;
+                document.getElementById('pendingSubmissions').textContent = Math.max(0, pendingSubmissions);
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        // Bulk upload functionality
+        async function uploadParticipantIds(uniqueIds) {
+            const results = { success: 0, failed: 0, errors: [] };
+            
+            for (const uniqueId of uniqueIds) {
+                if (!uniqueId.trim()) continue;
+                
+                try {
+                    // Check if ID already exists
+                    const existing = await databases.listDocuments(
+                        DATABASE_ID,
+                        PARTICIPANTS_COLLECTION_ID,
+                        [Query.equal('uniqueId', uniqueId.trim())]
+                    );
+
+                    if (existing.documents.length === 0) {
+                        // Create new participant ID
+                        await databases.createDocument(
+                            DATABASE_ID,
+                            PARTICIPANTS_COLLECTION_ID,
+                            ID.unique(),
+                            { uniqueId: uniqueId.trim() }
+                        );
+                        results.success++;
+                    } else {
+                        results.errors.push(`${uniqueId} already exists`);
+                        results.failed++;
+                    }
+                } catch (error) {
+                    console.error(`Error uploading ${uniqueId}:`, error);
+                    results.errors.push(`${uniqueId}: ${error.message}`);
+                    results.failed++;
+                }
+            }
+            
+            return results;
+        }
+
+        // Load existing participant IDs
+        async function loadExistingParticipantIds() {
+            try {
+                const participantsResponse = await databases.listDocuments(
+                    DATABASE_ID,
+                    PARTICIPANTS_COLLECTION_ID
+                );
+
+                const submissionsResponse = await databases.listDocuments(
+                    DATABASE_ID,
+                    COLLECTION_ID
+                );
+
+                allParticipants = participantsResponse.documents;
+                allSubmissions = submissionsResponse.documents;
+
+                displayParticipants(allParticipants);
+                updateTotalCount();
+            } catch (error) {
+                console.error('Error loading participant IDs:', error);
+                document.getElementById('existingIdsList').innerHTML = 
+                    '<p class="p-4 text-red-500">Error loading participant IDs.</p>';
+            }
+        }
+
+        // Display participants with submission status
+        function displayParticipants(participants) {
+            const listContainer = document.getElementById('existingIdsList');
+            
+            if (participants.length === 0) {
+                listContainer.innerHTML = '<p class="p-4 text-gray-500">No participant IDs found.</p>';
+                return;
+            }
+
+            listContainer.innerHTML = participants
+                .map(participant => {
+                    const hasSubmitted = allSubmissions.some(sub => sub.uniqueId === participant.uniqueId);
+                    const statusBadge = hasSubmitted 
+                        ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Submitted</span>'
+                        : '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pending</span>';
+                    
+                    return `
+                        <div class="flex justify-between items-center py-3 px-4 hover:bg-gray-50">
+                            <div class="flex items-center space-x-3">
+                                <span class="font-mono text-sm font-medium">${participant.uniqueId}</span>
+                                ${statusBadge}
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs text-gray-500">${new Date(participant.$createdAt).toLocaleDateString()}</span>
+                                <button 
+                                    onclick="deleteParticipantId('${participant.$id}', '${participant.uniqueId}')" 
+                                    class="text-red-600 hover:text-red-800 text-xs font-medium px-2 py-1 rounded hover:bg-red-50"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+        }
+
+        // Filter and search participants
+        function filterParticipants() {
+            const searchTerm = document.getElementById('searchParticipants').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value;
+
+            let filtered = allParticipants.filter(participant => {
+                const matchesSearch = participant.uniqueId.toLowerCase().includes(searchTerm);
+                
+                if (statusFilter === 'all') return matchesSearch;
+                
+                const hasSubmitted = allSubmissions.some(sub => sub.uniqueId === participant.uniqueId);
+                const matchesStatus = statusFilter === 'submitted' ? hasSubmitted : !hasSubmitted;
+                
+                return matchesSearch && matchesStatus;
+            });
+
+            displayParticipants(filtered);
+            document.getElementById('filteredIdsCount').textContent = filtered.length;
+        }
+
+        // Update total count
+        function updateTotalCount() {
+            document.getElementById('totalIdsCount').textContent = allParticipants.length;
+            document.getElementById('filteredIdsCount').textContent = allParticipants.length;
+        }
+
+        // Delete participant ID
+        async function deleteParticipantId(documentId, uniqueId) {
+            if (confirm(`Are you sure you want to delete "${uniqueId}"?`)) {
+                try {
+                    await databases.deleteDocument(DATABASE_ID, PARTICIPANTS_COLLECTION_ID, documentId);
+                    await loadExistingParticipantIds();
+                    await loadStatistics();
+                } catch (error) {
+                    console.error('Error deleting participant ID:', error);
+                    alert('Error deleting participant ID. Please try again.');
+                }
+            }
+        }
+
+        // Export participants to CSV
+        function exportParticipants() {
+            const csvContent = [
+                'unique_id,status,created_date',
+                ...allParticipants.map(participant => {
+                    const hasSubmitted = allSubmissions.some(sub => sub.uniqueId === participant.uniqueId);
+                    const status = hasSubmitted ? 'submitted' : 'pending';
+                    const date = new Date(participant.$createdAt).toISOString().split('T')[0];
+                    return `${participant.uniqueId},${status},${date}`;
+                })
+            ].join('\\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `participants-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Download CSV template
+        function downloadTemplate() {
+            const template = `unique_id
+participant001
+participant002
+participant003
+student-john-doe
+team-alpha-2024`;
+
+            const blob = new Blob([template], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'participants-template.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Make functions global for onclick handlers
+        window.deleteParticipantId = deleteParticipantId;
+
+        // Event Listeners
+        document.getElementById('bulkUploadMethod').addEventListener('change', function(e) {
+            const textSection = document.getElementById('textUploadSection');
+            const csvSection = document.getElementById('csvUploadSection');
+            
+            if (e.target.value === 'csv') {
+                textSection.classList.add('hidden');
+                csvSection.classList.remove('hidden');
+            } else {
+                textSection.classList.remove('hidden');
+                csvSection.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('uploadUniqueIdsBtn').addEventListener('click', async function() {
+            const uploadMethod = document.getElementById('bulkUploadMethod').value;
+            const uploadBtn = document.getElementById('uploadUniqueIdsBtn');
+            const uploadBtnText = document.getElementById('uploadBtnText');
+            const uploadSpinner = document.getElementById('uploadSpinner');
+            const uploadResult = document.getElementById('uploadResult');
+            
+            let uniqueIds = [];
+            
+            if (uploadMethod === 'text') {
+                const textInput = document.getElementById('uniqueIdsText').value.trim();
+                if (!textInput) {
+                    uploadResult.textContent = 'Please enter unique IDs.';
+                    uploadResult.className = 'mt-4 p-4 rounded-md bg-red-100 text-red-700';
+                    uploadResult.classList.remove('hidden');
+                    return;
+                }
+                uniqueIds = textInput.split('\\n').map(id => id.trim()).filter(id => id);
+            } else {
+                const csvFile = document.getElementById('csvFile').files[0];
+                if (!csvFile) {
+                    uploadResult.textContent = 'Please select a CSV file.';
+                    uploadResult.className = 'mt-4 p-4 rounded-md bg-red-100 text-red-700';
+                    uploadResult.classList.remove('hidden');
+                    return;
+                }
+                
+                const text = await csvFile.text();
+                const lines = text.split('\\n').map(line => line.trim()).filter(line => line);
+                
+                uniqueIds = lines.map(line => {
+                    const parts = line.split(',');
+                    return parts[0].trim().replace(/"/g, '');
+                }).filter(id => id && id !== 'unique_id');
+            }
+            
+            if (uniqueIds.length === 0) {
+                uploadResult.textContent = 'No valid unique IDs found.';
+                uploadResult.className = 'mt-4 p-4 rounded-md bg-red-100 text-red-700';
+                uploadResult.classList.remove('hidden');
+                return;
+            }
+            
+            uploadBtn.disabled = true;
+            uploadBtnText.textContent = 'Uploading...';
+            uploadSpinner.classList.remove('hidden');
+            uploadResult.classList.add('hidden');
+            
+            try {
+                const results = await uploadParticipantIds(uniqueIds);
+                
+                let message = `Upload completed!<br>`;
+                message += `✅ Successfully added: ${results.success}<br>`;
+                message += `❌ Failed: ${results.failed}`;
+                
+                if (results.errors.length > 0) {
+                    message += `<br><br>Errors:<br>${results.errors.slice(0, 10).join('<br>')}`;
+                    if (results.errors.length > 10) {
+                        message += `<br>... and ${results.errors.length - 10} more`;
+                    }
+                }
+                
+                uploadResult.innerHTML = message;
+                uploadResult.className = results.success > 0 
+                    ? 'mt-4 p-4 rounded-md bg-green-100 text-green-700'
+                    : 'mt-4 p-4 rounded-md bg-red-100 text-red-700';
+                uploadResult.classList.remove('hidden');
+                
+                if (uploadMethod === 'text') {
+                    document.getElementById('uniqueIdsText').value = '';
+                } else {
+                    document.getElementById('csvFile').value = '';
+                }
+                
+                await loadExistingParticipantIds();
+                await loadStatistics();
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                uploadResult.textContent = 'An error occurred during upload. Please try again.';
+                uploadResult.className = 'mt-4 p-4 rounded-md bg-red-100 text-red-700';
+                uploadResult.classList.remove('hidden');
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtnText.textContent = 'Upload Participant IDs';
+                uploadSpinner.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('refreshIdsBtn').addEventListener('click', async function() {
+            await loadExistingParticipantIds();
+            await loadStatistics();
+        });
+
+        document.getElementById('exportIdsBtn').addEventListener('click', exportParticipants);
+        document.getElementById('downloadTemplateBtn').addEventListener('click', downloadTemplate);
+
+        document.getElementById('searchParticipants').addEventListener('input', filterParticipants);
+        document.getElementById('filterStatus').addEventListener('change', filterParticipants);
+
+        document.getElementById('clearFiltersBtn').addEventListener('click', function() {
+            document.getElementById('searchParticipants').value = '';
+            document.getElementById('filterStatus').value = 'all';
+            filterParticipants();
+        });
+
+        // Authentication event handlers
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('adminUsername').value.trim();
+            const loginBtn = document.getElementById('adminLoginBtn');
+            const loginBtnText = document.getElementById('adminLoginBtnText');
+            const loginSpinner = document.getElementById('adminLoginSpinner');
+            const authError = document.getElementById('adminAuthError');
+            
+            if (!username) {
+                authError.textContent = 'Please enter your username.';
+                authError.classList.remove('hidden');
+                return;
+            }
+            
+            // Show loading state
+            loginBtn.disabled = true;
+            loginBtnText.textContent = 'Signing in...';
+            loginSpinner.classList.remove('hidden');
+            authError.classList.add('hidden');
+            
+            try {
+                await authenticateAdmin(username);
+                showDashboard();
+                // Initialize dashboard data after successful login
+                await loadDashboardData();
+            } catch (error) {
+                authError.textContent = error.message || 'Login failed. Please try again.';
+                authError.classList.remove('hidden');
+            } finally {
+                // Reset button state
+                loginBtn.disabled = false;
+                loginBtnText.textContent = 'Sign in as Administrator';
+                loginSpinner.classList.add('hidden');
+            }
+        });
+
+        // Admin logout button handler  
+        document.getElementById('adminLogoutBtn').addEventListener('click', logout);
+
+        // Initialize dashboard on load
+        initDashboard();
+    </script>
+    </div> <!-- End adminDashboardContent -->
+</body>
+</html>
