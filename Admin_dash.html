@@ -229,16 +229,10 @@
                                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Add Single Participant</h3>
                                 <form id="addParticipantForm" class="space-y-4">
                                     <div>
-                                        <label for="participantId" class="block text-sm font-medium text-gray-700">Unique ID</label>
+                                        <label for="participantId" class="block text-sm font-medium text-gray-700">Unique ID <span class="text-red-500">*</span></label>
                                         <input type="text" id="participantId" name="participantId" required
                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                                                placeholder="e.g., SD001">
-                                    </div>
-                                    <div>
-                                        <label for="participantName" class="block text-sm font-medium text-gray-700">Full Name</label>
-                                        <input type="text" id="participantName" name="participantName" required
-                                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                                               placeholder="Enter full name">
                                     </div>
                                     <button type="submit" 
                                             class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
@@ -255,7 +249,8 @@
                                         <label for="csvFile" class="block text-sm font-medium text-gray-700">Choose CSV File</label>
                                         <input type="file" id="csvFile" accept=".csv" 
                                                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                                        <p class="mt-1 text-xs text-gray-500">CSV format: uniqueId, fullName</p>
+                                        <p class="mt-1 text-xs text-gray-500">CSV format: One unique ID per line</p>
+                                        <p class="mt-1 text-xs text-gray-400">Example: SD001 (each ID on a new line)</p>
                                     </div>
                                     <button type="button" id="uploadCsvBtn"
                                             class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
@@ -295,7 +290,6 @@
                                     <thead class="bg-gray-50">
                                         <tr>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unique ID</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                         </tr>
@@ -348,19 +342,19 @@
             document.getElementById('addParticipantForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const participantId = document.getElementById('participantId').value.trim();
-                const participantName = document.getElementById('participantName').value.trim();
                 
-                if (participantId && participantName) {
+                if (participantId) {
                     try {
+                        const participantData = {
+                            uniqueId: participantId,
+                            createdAt: new Date().toISOString()
+                        };
+                        
                         await databases.createDocument(
                             DATABASE_ID,
                             PARTICIPANTS_COLLECTION_ID,
                             'unique()',
-                            {
-                                uniqueId: participantId,
-                                fullName: participantName,
-                                createdAt: new Date().toISOString()
-                            }
+                            participantData
                         );
                         
                         // Reset form and refresh data
@@ -394,12 +388,10 @@
                     for (let i = 0; i < lines.length; i++) {
                         const line = lines[i].trim();
                         if (line) {
-                            const parts = line.split(',').map(part => part.trim().replace(/"/g, ''));
-                            if (parts.length >= 2) {
-                                participants.push({
-                                    uniqueId: parts[0],
-                                    fullName: parts[1]
-                                });
+                            // Simple processing - just take the line as unique ID
+                            const uniqueId = line.replace(/"/g, '').trim();
+                            if (uniqueId) {
+                                participants.push({ uniqueId });
                             }
                         }
                     }
@@ -415,15 +407,16 @@
                     
                     for (const participant of participants) {
                         try {
+                            const participantData = {
+                                uniqueId: participant.uniqueId,
+                                createdAt: new Date().toISOString()
+                            };
+                            
                             await databases.createDocument(
                                 DATABASE_ID,
                                 PARTICIPANTS_COLLECTION_ID,
                                 'unique()',
-                                {
-                                    uniqueId: participant.uniqueId,
-                                    fullName: participant.fullName,
-                                    createdAt: new Date().toISOString()
-                                }
+                                participantData
                             );
                             successCount++;
                         } catch (error) {
@@ -495,9 +488,6 @@
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         ${participant.uniqueId}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        ${participant.fullName}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         ${new Date(participant.createdAt).toLocaleDateString()}
@@ -824,7 +814,7 @@ team-alpha-2024`;
         });
 
         // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
-        //document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function(e) {
             // F12
             if (e.keyCode === 123) {
                 e.preventDefault();
