@@ -407,37 +407,84 @@
                 console.log('Using DATABASE_ID:', DATABASE_ID);
                 console.log('Using PARTICIPANTS_COLLECTION_ID:', PARTICIPANTS_COLLECTION_ID);
                 
+                // Disable button during upload
+                const uploadBtn = document.getElementById('uploadCsvBtn');
+                const originalText = uploadBtn.textContent;
+                uploadBtn.disabled = true;
+                uploadBtn.textContent = 'Processing...';
+                
                 try {
                     const text = await file.text();
                     console.log('Raw CSV content length:', text.length);
-                    console.log('First 200 characters:', text.substring(0, 200));
+                    console.log('First 100 characters:', text.substring(0, 100));
                     
-                    const lines = text.split(/\r?\n/).filter(line => line.trim());
+                    // Better line splitting that handles different line endings
+                    const lines = text.split(/\r?\n/).map(line => line.trim()).filter(line => line.length > 0);
                     console.log('Lines found:', lines.length);
+                    console.log('Sample lines:', lines.slice(0, 5));
+                    
+                    if (lines.length === 0) {
+                        showNotification('CSV file is empty or contains no valid data', 'error');
+                        return;
+                    }
                     
                     const participants = [];
+                    const errors = [];
                     
                     for (let i = 0; i < lines.length; i++) {
-                        const line = lines[i].trim();
-                        if (line) {
-                            // Simple processing - just take the line as unique ID
-                            const uniqueId = line.replace(/"/g, '').trim();
-                            if (uniqueId) {
-                                participants.push({ uniqueId });
-                            }
+                        let line = lines[i];
+                        
+                        // Handle CSV with commas - take first column
+                        if (line.includes(',')) {
+                            line = line.split(',')[0];
                         }
+                        
+                        // Remove quotes and clean up
+                        const uniqueId = line.replace(/['"]/g, '').trim();
+                        
+                        // Skip empty lines or common headers
+                        if (!uniqueId || uniqueId.toLowerCase().match(/^(unique_?id|id|participant_?id)$/)) {
+                            continue;
+                        }
+                        
+                        // Validate ID format
+                        if (uniqueId.length > 255) {
+                            errors.push(`Line ${i + 1}: "${uniqueId}" is too long (max 255 characters)`);
+                            continue;
+                        }
+                        
+                        if (!/^[a-zA-Z0-9_-]+$/.test(uniqueId)) {
+                            errors.push(`Line ${i + 1}: "${uniqueId}" contains invalid characters (only letters, numbers, hyphens, and underscores allowed)`);
+                            continue;
+                        }
+                        
+                        // Check for duplicates within the file
+                        if (participants.some(p => p.uniqueId === uniqueId)) {
+                            errors.push(`Line ${i + 1}: "${uniqueId}" is duplicated in the file`);
+                            continue;
+                        }
+                        
+                        participants.push({ uniqueId });
                     }
                     
                     console.log('Processed participants:', participants);
+                    console.log('Validation errors:', errors);
                     
                     if (participants.length === 0) {
-                        showNotification('No valid participants found in CSV', 'error');
+                        let errorMsg = 'No valid participants found in CSV';
+                        if (errors.length > 0) {
+                            errorMsg += '. Errors found: ' + errors.slice(0, 3).join('; ');
+                            if (errors.length > 3) errorMsg += ` ... and ${errors.length - 3} more`;
+                        }
+                        showNotification(errorMsg, 'error');
                         return;
                     }
                     
                     // Upload participants
                     let successCount = 0;
                     let errorCount = 0;
+                    let skippedCount = 0;
+                    const uploadErrors = [];
                     
                     for (const participant of participants) {
                         try {
@@ -450,6 +497,7 @@
                             
                             if (existingParticipants.documents.length > 0) {
                                 console.log('Participant already exists:', participant.uniqueId);
+                                skippedCount++;
                                 continue; // Skip existing participants
                             }
                             
@@ -471,17 +519,41 @@
                         } catch (error) {
                             errorCount++;
                             console.error('Error adding participant:', participant.uniqueId, error);
+                            uploadErrors.push(`${participant.uniqueId}: ${error.message}`);
                         }
                     }
                     
+                    // Clear file input
                     fileInput.value = '';
+                    
+                    // Refresh data
                     await loadDashboardData();
                     await renderParticipants();
                     
-                    showNotification(`CSV upload completed: ${successCount} added, ${errorCount} failed`, 'success');
+                    // Show comprehensive results
+                    let message = `CSV upload completed: ${successCount} added`;
+                    if (skippedCount > 0) message += `, ${skippedCount} already existed`;
+                    if (errorCount > 0) message += `, ${errorCount} failed`;
+                    if (errors.length > 0) message += `, ${errors.length} validation errors`;
+                    
+                    const messageType = successCount > 0 ? 'success' : (errorCount > 0 ? 'error' : 'warning');
+                    showNotification(message, messageType);
+                    
+                    // Log detailed errors if any
+                    if (uploadErrors.length > 0) {
+                        console.error('Upload errors:', uploadErrors);
+                    }
+                    if (errors.length > 0) {
+                        console.warn('Validation errors:', errors);
+                    }
+                    
                 } catch (error) {
                     console.error('Error processing CSV:', error);
                     showNotification('Failed to process CSV file: ' + error.message, 'error');
+                } finally {
+                    // Re-enable button
+                    uploadBtn.disabled = false;
+                    uploadBtn.textContent = originalText;
                 }
             });
 
