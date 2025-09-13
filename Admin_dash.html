@@ -391,7 +391,7 @@
                     showNotification('Failed to add participant: ' + error.message, 'error');
                 }
             });
-            });
+            };
 
             // CSV upload functionality
             document.getElementById('uploadCsvBtn').addEventListener('click', async function() {
@@ -568,7 +568,6 @@
             document.getElementById('exportBtn').addEventListener('click', function() {
                 exportParticipants();
             });
-        }
 
         // Load dashboard data after authentication
         async function loadDashboardData() {
@@ -611,7 +610,7 @@
                         ${participant.uniqueId}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ${new Date(participant.createdAt).toLocaleDateString()}
+                        ${new Date(participant.$createdAt).toLocaleDateString()}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button onclick="deleteParticipant('${participant.$id}')" 
