@@ -86,150 +86,9 @@
         </div>
     </div>
 
-    <!-- Main Dashboard Content (Hidden initially) -->
-    <div id="dashboardContent" class="hidden">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-md mb-8">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <h1 class="text-2xl font-bold text-gray-800">Submissions Dashboard</h1>
-                <div class="flex space-x-4">
-                    <button 
-                        id="judgeLogoutBtn"
-                        class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200"
-                    >
-                        Logout
-                    </button>
-                    
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Search and Controls -->
-    <div class="max-w-6xl mx-auto px-4 mb-6">
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div class="flex flex-col md:flex-row gap-4 items-center flex-1">
-                    <!-- Search Input -->
-                    <div class="relative flex-1 max-w-md">
-                        <input type="text" id="searchInput" placeholder="Search by ID, Problem Statement..." 
-                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </div>
-                    
-                    <!-- Filter by Problem Statement -->
-                    <select id="problemFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">All Problems</option>
-                        <option value="problemstatement1">Problem Statement 1</option>
-                        <option value="problemstatement2">Problem Statement 2</option>
-                        <option value="problemstatement3">Problem Statement 3</option>
-                    </select>
-                    
-                    <!-- Filter by Evaluation Status -->
-                    <select id="statusFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">All Status</option>
-                        <option value="pending">Pending Only</option>
-                        <option value="evaluated">Evaluated Only</option>
-                        <option value="my-evaluations">My Evaluations</option>
-                    </select>
-                </div>
-                
-                <!-- Fetch Button -->
-                <button type="button" id="fetchBtn" 
-                        class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200 flex items-center gap-2">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                    </svg>
-                    <span id="fetchBtnText">Fetch Data</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Loading State -->
-    <div id="loadingSpinner" class="hidden max-w-6xl mx-auto px-4">
-        <div class="bg-white rounded-lg shadow-md p-8 text-center">
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p class="mt-4 text-gray-600">Loading submissions...</p>
-        </div>
-    </div>
-
-    <!-- Statistics -->
-    <div id="statsContainer" class="hidden max-w-6xl mx-auto px-4 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div class="bg-white rounded-lg shadow-md p-4 text-center">
-                <h3 class="text-lg font-semibold text-gray-700">Total Submissions</h3>
-                <p id="totalCount" class="text-3xl font-bold text-blue-600">0</p>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-4 text-center">
-                <h3 class="text-lg font-semibold text-gray-700">Evaluated</h3>
-                <p id="evaluatedCount" class="text-3xl font-bold text-green-600">0</p>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-4 text-center">
-                <h3 class="text-lg font-semibold text-gray-700">Problem Statement 1</h3>
-                <p id="pr1" class="text-3xl font-bold text-green-600">0</p>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-4 text-center">
-                <h3 class="text-lg font-semibold text-gray-700">Problem Statement 2</h3>
-                <p id="pr2" class="text-3xl font-bold text-purple-600">0</p>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-4 text-center">
-                <h3 class="text-lg font-semibold text-gray-700">Problem Statement 3</h3>
-                <p id="pr3" class="text-3xl font-bold text-emerald-600">0</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- No Data State -->
-    <div id="noDataMessage" class="hidden max-w-6xl mx-auto px-4">
-        <div class="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
-            <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-            <h3 class="text-xl font-medium text-gray-700 mb-2">No submissions found</h3>
-            <p class="text-gray-500">Try adjusting your search criteria or fetch the latest data.</p>
-        </div>
-    </div>
-
-    <!-- Data Table -->
-    <div id="dataContainer" class="hidden max-w-6xl mx-auto px-4">
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Unique ID
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Problem Statement
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Logo
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Poster
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Submitted At
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="dataTableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Data will be populated here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <!-- Main Dashboard Content (Will be dynamically loaded after authentication) -->
+    <div id="dashboardContent">
+        <!-- Dashboard content will be loaded here after successful authentication -->
     </div>
 
     <!-- Enhanced Lightbox Modal -->
@@ -461,12 +320,159 @@
 
         function showAuthScreen() {
             document.getElementById('authScreen').classList.remove('hidden');
-            document.getElementById('dashboardContent').classList.add('hidden');
+            document.getElementById('dashboardContent').innerHTML = '<!-- Dashboard content will be loaded here after successful authentication -->';
         }
 
         function showDashboard() {
             document.getElementById('authScreen').classList.add('hidden');
-            document.getElementById('dashboardContent').classList.remove('hidden');
+            loadDashboardContent();
+        }
+
+        function loadDashboardContent() {
+            const dashboardHTML = `
+                <!-- Navigation -->
+                <nav class="bg-white shadow-md mb-8">
+                    <div class="max-w-6xl mx-auto px-4">
+                        <div class="flex justify-between items-center py-4">
+                            <h1 class="text-2xl font-bold text-gray-800">Submissions Dashboard</h1>
+                            <div class="flex space-x-4">
+                                <button 
+                                    id="judgeLogoutBtn"
+                                    class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200"
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Search and Controls -->
+                <div class="max-w-6xl mx-auto px-4 mb-6">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                            <div class="flex flex-col md:flex-row gap-4 items-center flex-1">
+                                <!-- Search Input -->
+                                <div class="relative flex-1 max-w-md">
+                                    <input type="text" id="searchInput" placeholder="Search by ID, Problem Statement..." 
+                                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                                
+                                <!-- Filter by Problem Statement -->
+                                <select id="problemFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">All Problems</option>
+                                    <option value="problemstatement1">Problem Statement 1</option>
+                                    <option value="problemstatement2">Problem Statement 2</option>
+                                    <option value="problemstatement3">Problem Statement 3</option>
+                                </select>
+                                
+                                <!-- Filter by Evaluation Status -->
+                                <select id="statusFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">All Status</option>
+                                    <option value="pending">Pending Only</option>
+                                    <option value="evaluated">Evaluated Only</option>
+                                    <option value="my-evaluations">My Evaluations</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Fetch Button -->
+                            <button type="button" id="fetchBtn" 
+                                    class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200 flex items-center gap-2">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                <span id="fetchBtnText">Fetch Data</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingSpinner" class="hidden max-w-6xl mx-auto px-4">
+                    <div class="bg-white rounded-lg shadow-md p-8 text-center">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <p class="mt-4 text-gray-600">Loading submissions...</p>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div id="statsContainer" class="hidden max-w-6xl mx-auto px-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div class="bg-white rounded-lg shadow-md p-4 text-center">
+                            <h3 class="text-lg font-semibold text-gray-700">Total Submissions</h3>
+                            <p id="totalCount" class="text-3xl font-bold text-blue-600">0</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-4 text-center">
+                            <h3 class="text-lg font-semibold text-gray-700">Evaluated</h3>
+                            <p id="evaluatedCount" class="text-3xl font-bold text-green-600">0</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-4 text-center">
+                            <h3 class="text-lg font-semibold text-gray-700">Problem Statement 1</h3>
+                            <p id="pr1" class="text-3xl font-bold text-green-600">0</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-4 text-center">
+                            <h3 class="text-lg font-semibold text-gray-700">Problem Statement 2</h3>
+                            <p id="pr2" class="text-3xl font-bold text-purple-600">0</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-4 text-center">
+                            <h3 class="text-lg font-semibold text-gray-700">Problem Statement 3</h3>
+                            <p id="pr3" class="text-3xl font-bold text-emerald-600">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No Data State -->
+                <div id="noDataMessage" class="hidden max-w-6xl mx-auto px-4">
+                    <div class="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
+                        <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="text-xl font-medium text-gray-700 mb-2">No submissions found</h3>
+                        <p class="text-gray-500">Try adjusting your search criteria or fetch the latest data.</p>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div id="dataContainer" class="hidden max-w-6xl mx-auto px-4">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Participant ID
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Problem Statement
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Logo
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Poster
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions / Status
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dataTableBody" class="bg-white divide-y divide-gray-200">
+                                    <!-- Data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('dashboardContent').innerHTML = dashboardHTML;
+            
+            // Re-initialize DOM elements after loading content
+            initializeDOMElements();
+            setupDashboardEventListeners();
         }
 
         function logout() {
@@ -487,31 +493,39 @@
             return storage.getFileView(BUCKET_ID, fileId);
         }
 
-        // DOM Elements
-        const searchInput = document.getElementById('searchInput');
-        const problemFilter = document.getElementById('problemFilter');
-        const fetchBtn = document.getElementById('fetchBtn');
-        const fetchBtnText = document.getElementById('fetchBtnText');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const noDataMessage = document.getElementById('noDataMessage');
-        const dataContainer = document.getElementById('dataContainer');
-        const statsContainer = document.getElementById('statsContainer');
-        const dataTableBody = document.getElementById('dataTableBody');
-        const imageModal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-        const closeModal = document.getElementById('closeModal');
-        const prevImage = document.getElementById('prevImage');
-        const nextImage = document.getElementById('nextImage');
-        const imageLoader = document.getElementById('imageLoader');
-        const imageInfo = document.getElementById('imageInfo');
-        const imageTitle = document.getElementById('imageTitle');
-        const imageDescription = document.getElementById('imageDescription');
-        const imageCounter = document.getElementById('imageCounter');
-        const downloadImage = document.getElementById('downloadImage');
-        const zoomToggle = document.getElementById('zoomToggle');
-        const detailsModal = document.getElementById('detailsModal');
-        const detailsContent = document.getElementById('detailsContent');
-        const closeDetailsModal = document.getElementById('closeDetailsModal');
+        // DOM Elements (will be initialized after authentication)
+        let searchInput, problemFilter, fetchBtn, fetchBtnText, loadingSpinner, 
+            noDataMessage, dataContainer, statsContainer, dataTableBody, 
+            imageModal, modalImage, closeModal, prevImage, nextImage, 
+            imageLoader, imageInfo, imageTitle, imageDescription, imageCounter, 
+            downloadImage, zoomToggle, detailsModal, detailsContent, closeDetailsModal;
+
+        function initializeDOMElements() {
+            searchInput = document.getElementById('searchInput');
+            problemFilter = document.getElementById('problemFilter');
+            fetchBtn = document.getElementById('fetchBtn');
+            fetchBtnText = document.getElementById('fetchBtnText');
+            loadingSpinner = document.getElementById('loadingSpinner');
+            noDataMessage = document.getElementById('noDataMessage');
+            dataContainer = document.getElementById('dataContainer');
+            statsContainer = document.getElementById('statsContainer');
+            dataTableBody = document.getElementById('dataTableBody');
+            imageModal = document.getElementById('imageModal');
+            modalImage = document.getElementById('modalImage');
+            closeModal = document.getElementById('closeModal');
+            prevImage = document.getElementById('prevImage');
+            nextImage = document.getElementById('nextImage');
+            imageLoader = document.getElementById('imageLoader');
+            imageInfo = document.getElementById('imageInfo');
+            imageTitle = document.getElementById('imageTitle');
+            imageDescription = document.getElementById('imageDescription');
+            imageCounter = document.getElementById('imageCounter');
+            downloadImage = document.getElementById('downloadImage');
+            zoomToggle = document.getElementById('zoomToggle');
+            detailsModal = document.getElementById('detailsModal');
+            detailsContent = document.getElementById('detailsContent');
+            closeDetailsModal = document.getElementById('closeDetailsModal');
+        }
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
@@ -520,6 +534,46 @@
         });
 
         function setupEventListeners() {
+            // Authentication event handlers
+            document.getElementById('judgeLoginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('judgeUsername').value.trim();
+                const loginBtn = document.getElementById('judgeLoginBtn');
+                const loginBtnText = document.getElementById('judgeLoginBtnText');
+                const loginSpinner = document.getElementById('judgeLoginSpinner');
+                const authError = document.getElementById('judgeAuthError');
+                
+                if (!username) {
+                    authError.textContent = 'Please enter your username.';
+                    authError.classList.remove('hidden');
+                    return;
+                }
+                
+                // Show loading state
+                loginBtn.disabled = true;
+                loginBtnText.textContent = 'Signing in...';
+                loginSpinner.classList.remove('hidden');
+                authError.classList.add('hidden');
+                
+                try {
+                    await authenticateJudge(username);
+                    showDashboard();
+                    // Initialize dashboard after successful login
+                    fetchData();
+                } catch (error) {
+                    authError.textContent = error.message || 'Login failed. Please try again.';
+                    authError.classList.remove('hidden');
+                } finally {
+                    // Reset button state
+                    loginBtn.disabled = false;
+                    loginBtnText.textContent = 'Sign in as Judge';
+                    loginSpinner.classList.add('hidden');
+                }
+            });
+        }
+
+        function setupDashboardEventListeners() {
             // Search input
             searchInput.addEventListener('input', function() {
                 currentSearchTerm = this.value.toLowerCase();
@@ -540,6 +594,9 @@
 
             // Fetch button
             fetchBtn.addEventListener('click', fetchData);
+
+            // Judge logout button  
+            document.getElementById('judgeLogoutBtn').addEventListener('click', logout);
 
             // Event delegation for dynamically created elements
             dataTableBody.addEventListener('click', function(e) {
@@ -607,47 +664,6 @@
                 }
             });
         }
-
-        // Authentication event handlers
-        document.getElementById('judgeLoginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('judgeUsername').value.trim();
-            const loginBtn = document.getElementById('judgeLoginBtn');
-            const loginBtnText = document.getElementById('judgeLoginBtnText');
-            const loginSpinner = document.getElementById('judgeLoginSpinner');
-            const authError = document.getElementById('judgeAuthError');
-            
-            if (!username) {
-                authError.textContent = 'Please enter your username.';
-                authError.classList.remove('hidden');
-                return;
-            }
-            
-            // Show loading state
-            loginBtn.disabled = true;
-            loginBtnText.textContent = 'Signing in...';
-            loginSpinner.classList.remove('hidden');
-            authError.classList.add('hidden');
-            
-            try {
-                await authenticateJudge(username);
-                showDashboard();
-                // Initialize dashboard after successful login
-                fetchData();
-            } catch (error) {
-                authError.textContent = error.message || 'Login failed. Please try again.';
-                authError.classList.remove('hidden');
-            } finally {
-                // Reset button state
-                loginBtn.disabled = false;
-                loginBtnText.textContent = 'Sign in as Judge';
-                loginSpinner.classList.add('hidden');
-            }
-        });
-
-        // Judge logout button handler  
-        document.getElementById('judgeLogoutBtn').addEventListener('click', logout);
 
         async function fetchData() {
             showLoading();
@@ -776,75 +792,80 @@
                     <td class="px-6 py-4">
                         <div class="text-sm text-gray-900">${item.problemStatement}</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <img src="${item.logoUrl}" alt="Logo" class="h-32 w-32 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity border border-gray-200 shadow-sm" 
-                             data-image-url="${item.logoUrl}" data-image-type="logo" data-submission-id="${item.id}"
-                             onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;80&quot; height=&quot;80&quot; viewBox=&quot;0 0 80 80&quot;><rect width=&quot;80&quot; height=&quot;80&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;40&quot; y=&quot;45&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;12&quot;>ERROR</text></svg>'">
+                    <td class="px-6 py-4">
+                        <div class="space-y-2">
+                            <img src="${item.logoUrl}" alt="Logo" class="w-96 h-auto object-contain rounded cursor-pointer hover:opacity-75 transition-opacity border border-gray-200 shadow-sm" 
+                                 data-image-url="${item.logoUrl}" data-image-type="logo" data-submission-id="${item.id}"
+                                 onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;384&quot; height=&quot;240&quot; viewBox=&quot;0 0 384 240&quot;><rect width=&quot;384&quot; height=&quot;240&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;192&quot; y=&quot;125&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;16&quot;>LOGO ERROR</text></svg>'">
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="space-y-2">
+                            <img src="${item.posterUrl}" alt="Poster" class="w-96 h-auto object-contain rounded cursor-pointer hover:opacity-75 transition-opacity border border-gray-200 shadow-sm" 
+                                 data-image-url="${item.posterUrl}" data-image-type="poster" data-submission-id="${item.id}"
+                                 onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;384&quot; height=&quot;240&quot; viewBox=&quot;0 0 384 240&quot;><rect width=&quot;384&quot; height=&quot;240&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;192&quot; y=&quot;125&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;16&quot;>POSTER ERROR</text></svg>'">
+                        </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <img src="${item.posterUrl}" alt="Poster" class="h-32 w-32 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity border border-gray-200 shadow-sm" 
-                             data-image-url="${item.posterUrl}" data-image-type="poster" data-submission-id="${item.id}"
-                             onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;80&quot; height=&quot;80&quot; viewBox=&quot;0 0 80 80&quot;><rect width=&quot;80&quot; height=&quot;80&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;40&quot; y=&quot;45&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;12&quot;>ERROR</text></svg>'">
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">${formatDate(item.submittedAt)}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            ${item.isEvaluated ? 
-                                `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    Evaluated
-                                </span>` : 
-                                `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    Pending
-                                </span>`
+                        <div class="space-y-2">
+                            <!-- Action Button on Top -->
+                            <div class="text-sm font-medium">
+                                ${!item.isEvaluated ? 
+                                    `<button type="button" 
+                                        class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200" 
+                                        data-action="mark-evaluated" 
+                                        data-submission-id="${item.id}"
+                                        data-document-id="${item.documentId}">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Mark as Checked
+                                    </button>` : 
+                                    (item.evaluatedBy === currentLoggedInJudge?.unique_user_name ? 
+                                        `<button type="button" 
+                                            class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-gray-100 cursor-not-allowed opacity-50" 
+                                            disabled>
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            You Checked This
+                                        </button>` :
+                                        `<button type="button" 
+                                            class="inline-flex items-center px-3 py-1.5 border border-red-300 text-xs font-medium rounded-md text-red-700 bg-red-50 cursor-not-allowed opacity-75" 
+                                            disabled
+                                            title="Already evaluated by ${item.evaluatedBy}">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            Checked by ${item.evaluatedBy}
+                                        </button>`
+                                    )
+                                }
+                            </div>
+                            <!-- Status Below -->
+                            <div class="flex items-center">
+                                ${item.isEvaluated ? 
+                                    `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Evaluated
+                                    </span>` : 
+                                    `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Pending
+                                    </span>`
+                                }
+                            </div>
+                            ${item.isEvaluated && item.evaluatedBy ? 
+                                `<div class="text-xs text-gray-500 mt-1">
+                                    <div>By: <strong>${item.evaluatedBy}</strong></div>
+                                    <div>At: ${formatDate(item.evaluatedAt)}</div>
+                                </div>` : ''
                             }
                         </div>
-                        ${item.isEvaluated && item.evaluatedBy ? 
-                            `<div class="text-xs text-gray-500 mt-1">
-                                <div>By: <strong>${item.evaluatedBy}</strong></div>
-                                <div>At: ${formatDate(item.evaluatedAt)}</div>
-                            </div>` : ''
-                        }
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        ${!item.isEvaluated ? 
-                            `<button type="button" 
-                                class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200" 
-                                data-action="mark-evaluated" 
-                                data-submission-id="${item.id}"
-                                data-document-id="${item.documentId}">
-                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                </svg>
-                                Mark as Checked
-                            </button>` : 
-                            (item.evaluatedBy === currentLoggedInJudge?.unique_user_name ? 
-                                `<button type="button" 
-                                    class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-gray-100 cursor-not-allowed opacity-50" 
-                                    disabled>
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    You Checked This
-                                </button>` :
-                                `<button type="button" 
-                                    class="inline-flex items-center px-3 py-1.5 border border-red-300 text-xs font-medium rounded-md text-red-700 bg-red-50 cursor-not-allowed opacity-75" 
-                                    disabled
-                                    title="Already evaluated by ${item.evaluatedBy}">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    Checked by ${item.evaluatedBy}
-                                </button>`
-                            )
-                        }
                     </td>
                    
                 `;
@@ -1025,14 +1046,9 @@
                             <p class="mt-1 text-lg font-semibold text-gray-900">${item.id}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Submitted At</label>
-                            <p class="mt-1 text-sm text-gray-900">${formatDate(item.submittedAt)}</p>
+                            <label class="block text-sm font-medium text-gray-700">Problem Statement</label>
+                            <p class="mt-1 text-sm text-gray-900">${item.problemStatement}</p>
                         </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Problem Statement</label>
-                        <p class="mt-1 text-sm text-gray-900">${item.problemStatement}</p>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1224,6 +1240,104 @@
                 searchInput.focus();
             }
         });
+    </script>
+
+    <!-- Developer Tools Blocking Script -->
+    <script>
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        document.addEventListener('keydown', function(e) {
+            // F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+Shift+I (Developer Tools)
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+Shift+J (Console)
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+U (View Source)
+            if (e.ctrlKey && e.keyCode === 85) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+Shift+C (Inspect Element)
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+S (Save Page)
+            if (e.ctrlKey && e.keyCode === 83) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+A (Select All)
+            if (e.ctrlKey && e.keyCode === 65) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Detect if developer tools are open
+        let devtools = {
+            open: false,
+            orientation: null
+        };
+
+        const threshold = 160;
+
+        setInterval(function() {
+            if (window.outerHeight - window.innerHeight > threshold || 
+                window.outerWidth - window.innerWidth > threshold) {
+                if (!devtools.open) {
+                    devtools.open = true;
+                    document.body.innerHTML = '<div style="background: #000; color: #fff; text-align: center; padding: 50px; font-family: Arial;"><h1>Access Denied</h1><p>Developer tools are not allowed on this page.</p></div>';
+                }
+            } else {
+                devtools.open = false;
+            }
+        }, 500);
+
+        // Disable text selection
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Disable drag
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Clear console periodically
+        setInterval(function() {
+            console.clear();
+        }, 1000);
+
+        // Override console methods
+        window.console.log = function() {};
+        window.console.warn = function() {};
+        window.console.error = function() {};
+        window.console.info = function() {};
+        window.console.debug = function() {};
     </script>
     </div> <!-- End dashboardContent -->
 
