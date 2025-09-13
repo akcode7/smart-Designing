@@ -338,174 +338,42 @@
         }
 
         function setupAdminDashboardEventListeners() {
-            // Add single participant form
-            document.getElementById('addParticipantForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const participantId = document.getElementById('participantId').value.trim();
-                
-                if (!participantId) {
-                    showNotification('Please enter a unique ID', 'error');
-                    return;
-                }
-                
-                console.log('Attempting to add participant:', participantId);
-                console.log('Using DATABASE_ID:', DATABASE_ID);
-                console.log('Using PARTICIPANTS_COLLECTION_ID:', PARTICIPANTS_COLLECTION_ID);
-                
-                try {
-                    // Check if participant already exists
-                    const existingParticipants = await databases.listDocuments(
-                        DATABASE_ID,
-                        PARTICIPANTS_COLLECTION_ID,
-                        [Query.equal('uniqueId', participantId)]
-                    );
-                    
-                    if (existingParticipants.documents.length > 0) {
-                        showNotification('Participant ID already exists', 'error');
-                        return;
-                    }
-                    
-                    const participantData = {
-                        uniqueId: participantId
-                    };
-                    
-                    console.log('Creating document with data:', participantData);
-                    
-                    const result = await databases.createDocument(
-                        DATABASE_ID,
-                        PARTICIPANTS_COLLECTION_ID,
-                        ID.unique(),
-                        participantData
-                    );
-                    
-                    console.log('Document created successfully:', result);
-                    
-                    // Reset form and refresh data
-                    this.reset();
-                    await loadDashboardData();
-                    await renderParticipants();
-                    
-                    showNotification('Participant added successfully!', 'success');
-                } catch (error) {
-                    console.error('Error adding participant:', error);
-                    showNotification('Failed to add participant: ' + error.message, 'error');
-                }
-            });
-            };
-
-            // CSV upload functionality
-            document.getElementById('uploadCsvBtn').addEventListener('click', async function() {
-                const fileInput = document.getElementById('csvFile');
-                const file = fileInput.files[0];
-                
-                if (!file) {
-                    showNotification('Please select a CSV file', 'error');
-                    return;
-                }
-                
-                console.log('CSV file selected:', file.name, 'Size:', file.size);
-                console.log('Using DATABASE_ID:', DATABASE_ID);
-                console.log('Using PARTICIPANTS_COLLECTION_ID:', PARTICIPANTS_COLLECTION_ID);
-                
-                // Disable button during upload
-                const uploadBtn = document.getElementById('uploadCsvBtn');
-                const originalText = uploadBtn.textContent;
-                uploadBtn.disabled = true;
-                uploadBtn.textContent = 'Processing...';
-                
-                try {
-                    const text = await file.text();
-                    console.log('Raw CSV content length:', text.length);
-                    console.log('First 100 characters:', text.substring(0, 100));
-                    
-                    // Better line splitting that handles different line endings
-                    const lines = text.split(/\r?\n/).map(line => line.trim()).filter(line => line.length > 0);
-                    console.log('Lines found:', lines.length);
-                    console.log('Sample lines:', lines.slice(0, 5));
-                    
-                    if (lines.length === 0) {
-                        showNotification('CSV file is empty or contains no valid data', 'error');
-                        return;
-                    }
-                    
-                    const participants = [];
-                    const errors = [];
-                    
-                    for (let i = 0; i < lines.length; i++) {
-                        let line = lines[i];
+            // Wait a bit for DOM to be ready and add error checking
+            setTimeout(() => {
+                // Add single participant form
+                const addParticipantForm = document.getElementById('addParticipantForm');
+                if (addParticipantForm) {
+                    addParticipantForm.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        const participantId = document.getElementById('participantId').value.trim();
                         
-                        // Handle CSV with commas - take first column
-                        if (line.includes(',')) {
-                            line = line.split(',')[0];
+                        if (!participantId) {
+                            showNotification('Please enter a unique ID', 'error');
+                            return;
                         }
                         
-                        // Remove quotes and clean up
-                        const uniqueId = line.replace(/['"]/g, '').trim();
+                        console.log('Attempting to add participant:', participantId);
+                        console.log('Using DATABASE_ID:', DATABASE_ID);
+                        console.log('Using PARTICIPANTS_COLLECTION_ID:', PARTICIPANTS_COLLECTION_ID);
                         
-                        // Skip empty lines or common headers
-                        if (!uniqueId || uniqueId.toLowerCase().match(/^(unique_?id|id|participant_?id)$/)) {
-                            continue;
-                        }
-                        
-                        // Validate ID format
-                        if (uniqueId.length > 255) {
-                            errors.push(`Line ${i + 1}: "${uniqueId}" is too long (max 255 characters)`);
-                            continue;
-                        }
-                        
-                        if (!/^[a-zA-Z0-9_-]+$/.test(uniqueId)) {
-                            errors.push(`Line ${i + 1}: "${uniqueId}" contains invalid characters (only letters, numbers, hyphens, and underscores allowed)`);
-                            continue;
-                        }
-                        
-                        // Check for duplicates within the file
-                        if (participants.some(p => p.uniqueId === uniqueId)) {
-                            errors.push(`Line ${i + 1}: "${uniqueId}" is duplicated in the file`);
-                            continue;
-                        }
-                        
-                        participants.push({ uniqueId });
-                    }
-                    
-                    console.log('Processed participants:', participants);
-                    console.log('Validation errors:', errors);
-                    
-                    if (participants.length === 0) {
-                        let errorMsg = 'No valid participants found in CSV';
-                        if (errors.length > 0) {
-                            errorMsg += '. Errors found: ' + errors.slice(0, 3).join('; ');
-                            if (errors.length > 3) errorMsg += ` ... and ${errors.length - 3} more`;
-                        }
-                        showNotification(errorMsg, 'error');
-                        return;
-                    }
-                    
-                    // Upload participants
-                    let successCount = 0;
-                    let errorCount = 0;
-                    let skippedCount = 0;
-                    const uploadErrors = [];
-                    
-                    for (const participant of participants) {
                         try {
                             // Check if participant already exists
                             const existingParticipants = await databases.listDocuments(
                                 DATABASE_ID,
                                 PARTICIPANTS_COLLECTION_ID,
-                                [Query.equal('uniqueId', participant.uniqueId)]
+                                [Query.equal('uniqueId', participantId)]
                             );
                             
                             if (existingParticipants.documents.length > 0) {
-                                console.log('Participant already exists:', participant.uniqueId);
-                                skippedCount++;
-                                continue; // Skip existing participants
+                                showNotification('Participant ID already exists', 'error');
+                                return;
                             }
                             
                             const participantData = {
-                                uniqueId: participant.uniqueId
+                                uniqueId: participantId
                             };
                             
-                            console.log('Creating participant:', participantData);
+                            console.log('Creating document with data:', participantData);
                             
                             const result = await databases.createDocument(
                                 DATABASE_ID,
@@ -514,60 +382,223 @@
                                 participantData
                             );
                             
-                            console.log('Created participant successfully:', result);
-                            successCount++;
+                            console.log('Document created successfully:', result);
+                            
+                            // Reset form and refresh data
+                            this.reset();
+                            await loadDashboardData();
+                            await renderParticipants();
+                            
+                            showNotification('Participant added successfully!', 'success');
                         } catch (error) {
-                            errorCount++;
-                            console.error('Error adding participant:', participant.uniqueId, error);
-                            uploadErrors.push(`${participant.uniqueId}: ${error.message}`);
+                            console.error('Error adding participant:', error);
+                            showNotification('Failed to add participant: ' + error.message, 'error');
                         }
-                    }
-                    
-                    // Clear file input
-                    fileInput.value = '';
-                    
-                    // Refresh data
-                    await loadDashboardData();
-                    await renderParticipants();
-                    
-                    // Show comprehensive results
-                    let message = `CSV upload completed: ${successCount} added`;
-                    if (skippedCount > 0) message += `, ${skippedCount} already existed`;
-                    if (errorCount > 0) message += `, ${errorCount} failed`;
-                    if (errors.length > 0) message += `, ${errors.length} validation errors`;
-                    
-                    const messageType = successCount > 0 ? 'success' : (errorCount > 0 ? 'error' : 'warning');
-                    showNotification(message, messageType);
-                    
-                    // Log detailed errors if any
-                    if (uploadErrors.length > 0) {
-                        console.error('Upload errors:', uploadErrors);
-                    }
-                    if (errors.length > 0) {
-                        console.warn('Validation errors:', errors);
-                    }
-                    
-                } catch (error) {
-                    console.error('Error processing CSV:', error);
-                    showNotification('Failed to process CSV file: ' + error.message, 'error');
-                } finally {
-                    // Re-enable button
-                    uploadBtn.disabled = false;
-                    uploadBtn.textContent = originalText;
+                    });
+                } else {
+                    console.error('addParticipantForm element not found');
                 }
-            });
 
-            // Refresh button
-            document.getElementById('refreshBtn').addEventListener('click', async function() {
-                await loadDashboardData();
-                await renderParticipants();
-                showNotification('Data refreshed successfully!', 'success');
-            });
+                // CSV upload functionality
+                const uploadCsvBtn = document.getElementById('uploadCsvBtn');
+                if (uploadCsvBtn) {
+                    uploadCsvBtn.addEventListener('click', async function() {
+                        const fileInput = document.getElementById('csvFile');
+                        const file = fileInput?.files[0];
+                        
+                        if (!file) {
+                            showNotification('Please select a CSV file', 'error');
+                            return;
+                        }
+                        
+                        console.log('CSV file selected:', file.name, 'Size:', file.size);
+                        console.log('Using DATABASE_ID:', DATABASE_ID);
+                        console.log('Using PARTICIPANTS_COLLECTION_ID:', PARTICIPANTS_COLLECTION_ID);
+                        
+                        // Disable button during upload
+                        const uploadBtn = document.getElementById('uploadCsvBtn');
+                        const originalText = uploadBtn.textContent;
+                        uploadBtn.disabled = true;
+                        uploadBtn.textContent = 'Processing...';
+                        
+                        try {
+                            const text = await file.text();
+                            console.log('Raw CSV content length:', text.length);
+                            console.log('First 100 characters:', text.substring(0, 100));
+                            
+                            // Better line splitting that handles different line endings
+                            const lines = text.split(/\r?\n/).map(line => line.trim()).filter(line => line.length > 0);
+                            console.log('Lines found:', lines.length);
+                            console.log('Sample lines:', lines.slice(0, 5));
+                            
+                            if (lines.length === 0) {
+                                showNotification('CSV file is empty or contains no valid data', 'error');
+                                return;
+                            }
+                            
+                            const participants = [];
+                            const errors = [];
+                            
+                            for (let i = 0; i < lines.length; i++) {
+                                let line = lines[i];
+                                
+                                // Handle CSV with commas - take first column
+                                if (line.includes(',')) {
+                                    line = line.split(',')[0];
+                                }
+                                
+                                // Remove quotes and clean up
+                                const uniqueId = line.replace(/['"]/g, '').trim();
+                                
+                                // Skip empty lines or common headers
+                                if (!uniqueId || uniqueId.toLowerCase().match(/^(unique_?id|id|participant_?id)$/)) {
+                                    continue;
+                                }
+                                
+                                // Validate ID format
+                                if (uniqueId.length > 255) {
+                                    errors.push(`Line ${i + 1}: "${uniqueId}" is too long (max 255 characters)`);
+                                    continue;
+                                }
+                                
+                                if (!/^[a-zA-Z0-9_-]+$/.test(uniqueId)) {
+                                    errors.push(`Line ${i + 1}: "${uniqueId}" contains invalid characters (only letters, numbers, hyphens, and underscores allowed)`);
+                                    continue;
+                                }
+                                
+                                // Check for duplicates within the file
+                                if (participants.some(p => p.uniqueId === uniqueId)) {
+                                    errors.push(`Line ${i + 1}: "${uniqueId}" is duplicated in the file`);
+                                    continue;
+                                }
+                                
+                                participants.push({ uniqueId });
+                            }
+                            
+                            console.log('Processed participants:', participants);
+                            console.log('Validation errors:', errors);
+                            
+                            if (participants.length === 0) {
+                                let errorMsg = 'No valid participants found in CSV';
+                                if (errors.length > 0) {
+                                    errorMsg += '. Errors found: ' + errors.slice(0, 3).join('; ');
+                                    if (errors.length > 3) errorMsg += ` ... and ${errors.length - 3} more`;
+                                }
+                                showNotification(errorMsg, 'error');
+                                return;
+                            }
+                            
+                            // Upload participants
+                            let successCount = 0;
+                            let errorCount = 0;
+                            let skippedCount = 0;
+                            const uploadErrors = [];
+                            
+                            for (const participant of participants) {
+                                try {
+                                    // Check if participant already exists
+                                    const existingParticipants = await databases.listDocuments(
+                                        DATABASE_ID,
+                                        PARTICIPANTS_COLLECTION_ID,
+                                        [Query.equal('uniqueId', participant.uniqueId)]
+                                    );
+                                    
+                                    if (existingParticipants.documents.length > 0) {
+                                        console.log('Participant already exists:', participant.uniqueId);
+                                        skippedCount++;
+                                        continue; // Skip existing participants
+                                    }
+                                    
+                                    const participantData = {
+                                        uniqueId: participant.uniqueId
+                                    };
+                                    
+                                    console.log('Creating participant:', participantData);
+                                    
+                                    const result = await databases.createDocument(
+                                        DATABASE_ID,
+                                        PARTICIPANTS_COLLECTION_ID,
+                                        ID.unique(),
+                                        participantData
+                                    );
+                                    
+                                    console.log('Created participant successfully:', result);
+                                    successCount++;
+                                } catch (error) {
+                                    errorCount++;
+                                    console.error('Error adding participant:', participant.uniqueId, error);
+                                    uploadErrors.push(`${participant.uniqueId}: ${error.message}`);
+                                }
+                            }
+                            
+                            // Clear file input
+                            if (fileInput) fileInput.value = '';
+                            
+                            // Refresh data
+                            await loadDashboardData();
+                            await renderParticipants();
+                            
+                            // Show comprehensive results
+                            let message = `CSV upload completed: ${successCount} added`;
+                            if (skippedCount > 0) message += `, ${skippedCount} already existed`;
+                            if (errorCount > 0) message += `, ${errorCount} failed`;
+                            if (errors.length > 0) message += `, ${errors.length} validation errors`;
+                            
+                            const messageType = successCount > 0 ? 'success' : (errorCount > 0 ? 'error' : 'warning');
+                            showNotification(message, messageType);
+                            
+                            // Log detailed errors if any
+                            if (uploadErrors.length > 0) {
+                                console.error('Upload errors:', uploadErrors);
+                            }
+                            if (errors.length > 0) {
+                                console.warn('Validation errors:', errors);
+                            }
+                            
+                        } catch (error) {
+                            console.error('Error processing CSV:', error);
+                            showNotification('Failed to process CSV file: ' + error.message, 'error');
+                        } finally {
+                            // Re-enable button
+                            uploadBtn.disabled = false;
+                            uploadBtn.textContent = originalText;
+                        }
+                    });
+                } else {
+                    console.error('uploadCsvBtn element not found');
+                }
 
-            // Export button
-            document.getElementById('exportBtn').addEventListener('click', function() {
-                exportParticipants();
-            });
+                // Refresh button
+                const refreshBtn = document.getElementById('refreshBtn');
+                if (refreshBtn) {
+                    refreshBtn.addEventListener('click', async function() {
+                        await loadDashboardData();
+                        await renderParticipants();
+                        showNotification('Data refreshed successfully!', 'success');
+                    });
+                } else {
+                    console.error('refreshBtn element not found');
+                }
+
+                // Export button
+                const exportBtn = document.getElementById('exportBtn');
+                if (exportBtn) {
+                    exportBtn.addEventListener('click', function() {
+                        exportParticipants();
+                    });
+                } else {
+                    console.error('exportBtn element not found');
+                }
+
+                // Admin logout button
+                const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+                if (adminLogoutBtn) {
+                    adminLogoutBtn.addEventListener('click', logout);
+                } else {
+                    console.error('adminLogoutBtn element not found');
+                }
+            }, 100); // Wait 100ms for DOM to be ready
+        }
 
         // Load dashboard data after authentication
         async function loadDashboardData() {
@@ -978,26 +1009,6 @@ team-alpha-2024`;
             }
         });
 
-        // Detect if developer tools are open
-        let devtools = {
-            open: false,
-            orientation: null
-        };
-
-        const threshold = 160;
-
-        setInterval(function() {
-            if (window.outerHeight - window.innerHeight > threshold || 
-                window.outerWidth - window.innerWidth > threshold) {
-                if (!devtools.open) {
-                    devtools.open = true;
-                    document.body.innerHTML = '<div style="background: #000; color: #fff; text-align: center; padding: 50px; font-family: Arial;"><h1>Access Denied</h1><p>Developer tools are not allowed on this page.</p></div>';
-                }
-            } else {
-                devtools.open = false;
-            }
-        }, 500);
-
         // Disable text selection
         document.addEventListener('selectstart', function(e) {
             e.preventDefault();
@@ -1009,15 +1020,6 @@ team-alpha-2024`;
             e.preventDefault();
             return false;
         });
-
-       
-
-        // Override console methods
-        window.console.log = function() {};
-        window.console.warn = function() {};
-        window.console.error = function() {};
-        window.console.info = function() {};
-        window.console.debug = function() {};
     </script>
     </div> <!-- End adminDashboardContent -->
 </body>
