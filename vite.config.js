@@ -8,7 +8,7 @@ export default defineConfig({
             rollupOptions: {
               input: {
                 main: 'index.html',
-                admin: 'admin_dash.html',
+                admin: 'Admin_dash.html',
                 judging: 'judging.html'
               },
             },
