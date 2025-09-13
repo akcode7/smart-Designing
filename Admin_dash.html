@@ -393,7 +393,7 @@
                     showNotification('Failed to add participant: ' + error.message, 'error');
                 }
             });
-            });
+            };
 
             // CSV upload functionality
             document.getElementById('uploadCsvBtn').addEventListener('click', async function() {
@@ -570,7 +570,7 @@
             document.getElementById('exportBtn').addEventListener('click', function() {
                 exportParticipants();
             });
-        }
+        
 
         // Load dashboard data after authentication
         async function loadDashboardData() {
