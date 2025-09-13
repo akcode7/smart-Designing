@@ -370,6 +370,8 @@
                     };
                     
                     console.log('Creating document with data:', participantData);
+                    console.log('Data keys:', Object.keys(participantData));
+                    console.log('Data values:', Object.values(participantData));
                     
                     const result = await databases.createDocument(
                         DATABASE_ID,
@@ -611,7 +613,7 @@
                         ${participant.uniqueId}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ${new Date(participant.createdAt).toLocaleDateString()}
+                        ${new Date(participant.$createdAt).toLocaleDateString()}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button onclick="deleteParticipant('${participant.$id}')" 
