@@ -384,14 +384,30 @@
             const results = { success: 0, failed: 0, errors: [] };
             
             for (const uniqueId of uniqueIds) {
-                if (!uniqueId.trim()) continue;
+                const trimmedId = uniqueId.trim();
+                
+                // Skip empty IDs
+                if (!trimmedId) continue;
                 
                 try {
+                    // Validate ID format before attempting to upload
+                    if (trimmedId.length > 255) {
+                        results.errors.push(`${trimmedId}: ID too long (max 255 characters)`);
+                        results.failed++;
+                        continue;
+                    }
+                    
+                    if (!/^[a-zA-Z0-9_-]+$/.test(trimmedId)) {
+                        results.errors.push(`${trimmedId}: Invalid characters (only letters, numbers, hyphens, and underscores allowed)`);
+                        results.failed++;
+                        continue;
+                    }
+                    
                     // Check if ID already exists
                     const existing = await databases.listDocuments(
                         DATABASE_ID,
                         PARTICIPANTS_COLLECTION_ID,
-                        [Query.equal('uniqueId', uniqueId.trim())]
+                        [Query.equal('uniqueId', trimmedId)]
                     );
 
                     if (existing.documents.length === 0) {
@@ -400,16 +416,26 @@
                             DATABASE_ID,
                             PARTICIPANTS_COLLECTION_ID,
                             ID.unique(),
-                            { uniqueId: uniqueId.trim() }
+                            { uniqueId: trimmedId }
                         );
                         results.success++;
+                        console.log(`Successfully uploaded: ${trimmedId}`);
                     } else {
-                        results.errors.push(`${uniqueId} already exists`);
+                        results.errors.push(`${trimmedId}: Already exists`);
                         results.failed++;
                     }
                 } catch (error) {
-                    console.error(`Error uploading ${uniqueId}:`, error);
-                    results.errors.push(`${uniqueId}: ${error.message}`);
+                    console.error(`Error uploading ${trimmedId}:`, error);
+                    let errorMessage = error.message;
+                    
+                    // Provide more specific error messages
+                    if (errorMessage.includes('Invalid document structure')) {
+                        errorMessage = 'Invalid ID format or structure';
+                    } else if (errorMessage.includes('uniqueId')) {
+                        errorMessage = 'ID validation failed';
+                    }
+                    
+                    results.errors.push(`${trimmedId}: ${errorMessage}`);
                     results.failed++;
                 }
             }
@@ -595,7 +621,25 @@ team-alpha-2024`;
                     uploadResult.classList.remove('hidden');
                     return;
                 }
-                uniqueIds = textInput.split('\\n').map(id => id.trim()).filter(id => id);
+                
+                uniqueIds = textInput.split('\n').map(id => id.trim()).filter(id => {
+                    // Filter out empty strings and validate format
+                    if (!id) return false;
+                    
+                    // Validate string length (must be <= 255 chars as per Appwrite)
+                    if (id.length > 255) {
+                        console.warn(`ID "${id}" is too long (${id.length} chars), skipping`);
+                        return false;
+                    }
+                    
+                    // Check for valid characters (alphanumeric, hyphens, underscores)
+                    if (!/^[a-zA-Z0-9_-]+$/.test(id)) {
+                        console.warn(`ID "${id}" contains invalid characters, skipping`);
+                        return false;
+                    }
+                    
+                    return true;
+                });
             } else {
                 const csvFile = document.getElementById('csvFile').files[0];
                 if (!csvFile) {
@@ -605,17 +649,65 @@ team-alpha-2024`;
                     return;
                 }
                 
-                const text = await csvFile.text();
-                const lines = text.split('\\n').map(line => line.trim()).filter(line => line);
-                
-                uniqueIds = lines.map(line => {
-                    const parts = line.split(',');
-                    return parts[0].trim().replace(/"/g, '');
-                }).filter(id => id && id !== 'unique_id');
+                try {
+                    const text = await csvFile.text();
+                    const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+                    
+                    uniqueIds = lines.map(line => {
+                        // Handle CSV with commas - take first column
+                        const parts = line.split(',');
+                        let id = parts[0].trim();
+                        
+                        // Remove quotes if present
+                        id = id.replace(/^["']|["']$/g, '');
+                        
+                        return id;
+                    }).filter(id => {
+                        // Filter out empty strings, headers, and validate format
+                        if (!id || id === 'unique_id' || id === 'uniqueId' || id === 'id') {
+                            return false;
+                        }
+                        
+                        // Validate string length (must be <= 255 chars as per Appwrite)
+                        if (id.length > 255) {
+                            console.warn(`ID "${id}" is too long (${id.length} chars), skipping`);
+                            return false;
+                        }
+                        
+                        // Check for valid characters (alphanumeric, hyphens, underscores)
+                        if (!/^[a-zA-Z0-9_-]+$/.test(id)) {
+                            console.warn(`ID "${id}" contains invalid characters, skipping`);
+                            return false;
+                        }
+                        
+                        return true;
+                    });
+                } catch (error) {
+                    uploadResult.textContent = 'Error reading CSV file. Please ensure it\'s a valid CSV format.';
+                    uploadResult.className = 'mt-4 p-4 rounded-md bg-red-100 text-red-700';
+                    uploadResult.classList.remove('hidden');
+                    return;
+                }
             }
             
             if (uniqueIds.length === 0) {
-                uploadResult.textContent = 'No valid unique IDs found.';
+                uploadResult.textContent = 'No valid unique IDs found. Please check your input format.';
+                uploadResult.className = 'mt-4 p-4 rounded-md bg-red-100 text-red-700';
+                uploadResult.classList.remove('hidden');
+                return;
+            }
+            
+            // Show preview of what will be uploaded
+            console.log('IDs to be uploaded:', uniqueIds);
+            console.log('Total count:', uniqueIds.length);
+            
+            // Validate all IDs before attempting upload
+            const invalidIds = uniqueIds.filter(id => {
+                return id.length > 255 || !/^[a-zA-Z0-9_-]+$/.test(id);
+            });
+            
+            if (invalidIds.length > 0) {
+                uploadResult.innerHTML = `Found ${invalidIds.length} invalid ID(s):<br>${invalidIds.slice(0, 5).join(', ')}${invalidIds.length > 5 ? '...' : ''}<br><br>IDs must contain only letters, numbers, hyphens, and underscores, and be no longer than 255 characters.`;
                 uploadResult.className = 'mt-4 p-4 rounded-md bg-red-100 text-red-700';
                 uploadResult.classList.remove('hidden');
                 return;
