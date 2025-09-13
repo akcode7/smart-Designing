@@ -343,31 +343,55 @@
                 e.preventDefault();
                 const participantId = document.getElementById('participantId').value.trim();
                 
-                if (participantId) {
-                    try {
-                        const participantData = {
-                            uniqueId: participantId,
-                            createdAt: new Date().toISOString()
-                        };
-                        
-                        await databases.createDocument(
-                            DATABASE_ID,
-                            PARTICIPANTS_COLLECTION_ID,
-                            'unique()',
-                            participantData
-                        );
-                        
-                        // Reset form and refresh data
-                        this.reset();
-                        await loadDashboardData();
-                        await renderParticipants();
-                        
-                        showNotification('Participant added successfully!', 'success');
-                    } catch (error) {
-                        console.error('Error adding participant:', error);
-                        showNotification('Failed to add participant: ' + error.message, 'error');
-                    }
+                if (!participantId) {
+                    showNotification('Please enter a unique ID', 'error');
+                    return;
                 }
+                
+                console.log('Attempting to add participant:', participantId);
+                console.log('Using DATABASE_ID:', DATABASE_ID);
+                console.log('Using PARTICIPANTS_COLLECTION_ID:', PARTICIPANTS_COLLECTION_ID);
+                
+                try {
+                    // Check if participant already exists
+                    const existingParticipants = await databases.listDocuments(
+                        DATABASE_ID,
+                        PARTICIPANTS_COLLECTION_ID,
+                        [Query.equal('uniqueId', participantId)]
+                    );
+                    
+                    if (existingParticipants.documents.length > 0) {
+                        showNotification('Participant ID already exists', 'error');
+                        return;
+                    }
+                    
+                    const participantData = {
+                        uniqueId: participantId,
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    console.log('Creating document with data:', participantData);
+                    
+                    const result = await databases.createDocument(
+                        DATABASE_ID,
+                        PARTICIPANTS_COLLECTION_ID,
+                        ID.unique(),
+                        participantData
+                    );
+                    
+                    console.log('Document created successfully:', result);
+                    
+                    // Reset form and refresh data
+                    this.reset();
+                    await loadDashboardData();
+                    await renderParticipants();
+                    
+                    showNotification('Participant added successfully!', 'success');
+                } catch (error) {
+                    console.error('Error adding participant:', error);
+                    showNotification('Failed to add participant: ' + error.message, 'error');
+                }
+            });
             });
 
             // CSV upload functionality
@@ -380,9 +404,18 @@
                     return;
                 }
                 
+                console.log('CSV file selected:', file.name, 'Size:', file.size);
+                console.log('Using DATABASE_ID:', DATABASE_ID);
+                console.log('Using PARTICIPANTS_COLLECTION_ID:', PARTICIPANTS_COLLECTION_ID);
+                
                 try {
                     const text = await file.text();
-                    const lines = text.split('\\n').filter(line => line.trim());
+                    console.log('Raw CSV content length:', text.length);
+                    console.log('First 200 characters:', text.substring(0, 200));
+                    
+                    const lines = text.split(/\r?\n/).filter(line => line.trim());
+                    console.log('Lines found:', lines.length);
+                    
                     const participants = [];
                     
                     for (let i = 0; i < lines.length; i++) {
@@ -396,6 +429,8 @@
                         }
                     }
                     
+                    console.log('Processed participants:', participants);
+                    
                     if (participants.length === 0) {
                         showNotification('No valid participants found in CSV', 'error');
                         return;
@@ -407,17 +442,33 @@
                     
                     for (const participant of participants) {
                         try {
+                            // Check if participant already exists
+                            const existingParticipants = await databases.listDocuments(
+                                DATABASE_ID,
+                                PARTICIPANTS_COLLECTION_ID,
+                                [Query.equal('uniqueId', participant.uniqueId)]
+                            );
+                            
+                            if (existingParticipants.documents.length > 0) {
+                                console.log('Participant already exists:', participant.uniqueId);
+                                continue; // Skip existing participants
+                            }
+                            
                             const participantData = {
                                 uniqueId: participant.uniqueId,
                                 createdAt: new Date().toISOString()
                             };
                             
-                            await databases.createDocument(
+                            console.log('Creating participant:', participantData);
+                            
+                            const result = await databases.createDocument(
                                 DATABASE_ID,
                                 PARTICIPANTS_COLLECTION_ID,
-                                'unique()',
+                                ID.unique(),
                                 participantData
                             );
+                            
+                            console.log('Created participant successfully:', result);
                             successCount++;
                         } catch (error) {
                             errorCount++;
