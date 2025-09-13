@@ -777,14 +777,14 @@
                         <div class="text-sm text-gray-900">${item.problemStatement}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <img src="${item.logoUrl}" alt="Logo" class="h-12 w-12 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity" 
+                        <img src="${item.logoUrl}" alt="Logo" class="h-32 w-32 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity border border-gray-200 shadow-sm" 
                              data-image-url="${item.logoUrl}" data-image-type="logo" data-submission-id="${item.id}"
-                             onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;48&quot; height=&quot;48&quot; viewBox=&quot;0 0 48 48&quot;><rect width=&quot;48&quot; height=&quot;48&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;24&quot; y=&quot;28&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;10&quot;>ERROR</text></svg>'">
+                             onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;80&quot; height=&quot;80&quot; viewBox=&quot;0 0 80 80&quot;><rect width=&quot;80&quot; height=&quot;80&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;40&quot; y=&quot;45&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;12&quot;>ERROR</text></svg>'">
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <img src="${item.posterUrl}" alt="Poster" class="h-12 w-12 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity" 
+                        <img src="${item.posterUrl}" alt="Poster" class="h-32 w-32 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity border border-gray-200 shadow-sm" 
                              data-image-url="${item.posterUrl}" data-image-type="poster" data-submission-id="${item.id}"
-                             onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;48&quot; height=&quot;48&quot; viewBox=&quot;0 0 48 48&quot;><rect width=&quot;48&quot; height=&quot;48&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;24&quot; y=&quot;28&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;10&quot;>ERROR</text></svg>'">
+                             onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;80&quot; height=&quot;80&quot; viewBox=&quot;0 0 80 80&quot;><rect width=&quot;80&quot; height=&quot;80&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;40&quot; y=&quot;45&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;12&quot;>ERROR</text></svg>'">
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-900">${formatDate(item.submittedAt)}</div>
@@ -1038,15 +1038,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Logo (${item.logoFileName || 'logo.jpg'})</label>
-                            <img src="${item.logoUrl}" alt="Logo" class="w-full h-32 object-cover rounded border cursor-pointer hover:opacity-75 transition-opacity" 
+                            <img src="${item.logoUrl}" alt="Logo" class="w-full h-48 object-cover rounded border cursor-pointer hover:opacity-75 transition-opacity shadow-sm" 
                                  data-image-url="${item.logoUrl}" data-image-type="logo" data-submission-id="${item.id}"
-                                 onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;200&quot; height=&quot;128&quot; viewBox=&quot;0 0 200 128&quot;><rect width=&quot;200&quot; height=&quot;128&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;100&quot; y=&quot;70&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;14&quot;>Image Not Found</text></svg>'">
+                                 onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;200&quot; height=&quot;192&quot; viewBox=&quot;0 0 200 192&quot;><rect width=&quot;200&quot; height=&quot;192&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;100&quot; y=&quot;105&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;14&quot;>Image Not Found</text></svg>'">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Poster (${item.posterFileName || 'poster.jpg'})</label>
-                            <img src="${item.posterUrl}" alt="Poster" class="w-full h-32 object-cover rounded border cursor-pointer hover:opacity-75 transition-opacity" 
+                            <img src="${item.posterUrl}" alt="Poster" class="w-full h-48 object-cover rounded border cursor-pointer hover:opacity-75 transition-opacity shadow-sm" 
                                  data-image-url="${item.posterUrl}" data-image-type="poster" data-submission-id="${item.id}"
-                                 onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;200&quot; height=&quot;128&quot; viewBox=&quot;0 0 200 128&quot;><rect width=&quot;200&quot; height=&quot;128&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;100&quot; y=&quot;70&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;14&quot;>Image Not Found</text></svg>'">
+                                 onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;200&quot; height=&quot;192&quot; viewBox=&quot;0 0 200 192&quot;><rect width=&quot;200&quot; height=&quot;192&quot; fill=&quot;%23f3f4f6&quot;/><text x=&quot;100&quot; y=&quot;105&quot; text-anchor=&quot;middle&quot; fill=&quot;%236b7280&quot; font-family=&quot;Arial&quot; font-size=&quot;14&quot;>Image Not Found</text></svg>'">
                         </div>
                     </div>
                 </div>
