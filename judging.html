@@ -488,6 +488,43 @@
             showAuthScreen();
         }
 
+        // Helper function to get all documents from Appwrite (bypassing 25 limit)
+        async function getAllDocuments(databaseId, collectionId, queries = []) {
+            let allDocuments = [];
+            let hasMore = true;
+            let offset = 0;
+            const limit = 100; // Fetch 100 documents per request
+            
+            console.log('Starting to fetch all documents from collection:', collectionId);
+            
+            while (hasMore) {
+                try {
+                    const response = await databases.listDocuments(
+                        databaseId,
+                        collectionId,
+                        [...queries, Query.limit(limit), Query.offset(offset)]
+                    );
+                    
+                    console.log(`Fetched ${response.documents.length} documents (offset: ${offset})`);
+                    
+                    allDocuments = allDocuments.concat(response.documents);
+                    
+                    // Check if we got fewer documents than the limit, meaning we've reached the end
+                    if (response.documents.length < limit) {
+                        hasMore = false;
+                    } else {
+                        offset += limit;
+                    }
+                } catch (error) {
+                    console.error('Error fetching documents batch:', error);
+                    throw error;
+                }
+            }
+            
+            console.log(`Total documents fetched: ${allDocuments.length}`);
+            return { documents: allDocuments, total: allDocuments.length };
+        }
+
         // Helper function to get image URL from Appwrite Storage
         function getImageUrl(fileId) {
             return storage.getFileView(BUCKET_ID, fileId);
@@ -669,11 +706,14 @@
             showLoading();
             
             try {
-                // Fetch submissions from Appwrite Database
-                const response = await databases.listDocuments(
+                // Fetch ALL submissions from Appwrite Database using pagination helper
+                console.log('Fetching all submissions with pagination...');
+                const response = await getAllDocuments(
                     DATABASE_ID,
                     COLLECTION_ID
                 );
+                
+                console.log(`Fetched ${response.documents.length} total submissions`);
                 
                 // Transform Appwrite documents to our format
                 submissionsData = response.documents.map(doc => ({
@@ -692,6 +732,8 @@
                     evaluatedAt: doc.evaluatedAt || null
                 }));
                 
+                console.log(`Processed ${submissionsData.length} submissions for display`);
+                
                 filteredData = [...submissionsData];
                 updateStatistics();
                 displayData();
@@ -701,7 +743,7 @@
                 
                 // Show subtle refresh notification only if it's not the initial load
                 if (!isInitialLoad) {
-                    showInstantPopup('Data refreshed successfully', 'success');
+                    showInstantPopup(`Data refreshed successfully - ${submissionsData.length} submissions loaded`, 'success');
                 }
                 isInitialLoad = false;
                 

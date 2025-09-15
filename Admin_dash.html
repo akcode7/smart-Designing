@@ -600,6 +600,34 @@
             }, 100); // Wait 100ms for DOM to be ready
         }
 
+        // Helper function to get all documents with pagination
+        async function getAllDocuments(databaseId, collectionId, queries = []) {
+            let allDocuments = [];
+            let offset = 0;
+            const limit = 200; // Fetch 100 at a time
+            
+            while (true) {
+                const response = await databases.listDocuments(
+                    databaseId,
+                    collectionId,
+                    queries,
+                    limit,
+                    offset
+                );
+                
+                allDocuments = allDocuments.concat(response.documents);
+                
+                // If we got less than the limit, we've reached the end
+                if (response.documents.length < limit) {
+                    break;
+                }
+                
+                offset += limit;
+            }
+            
+            return allDocuments;
+        }
+
         // Load dashboard data after authentication
         async function loadDashboardData() {
             await loadStatistics();
@@ -609,10 +637,11 @@
         // Load statistics
         async function loadStatistics() {
             try {
-                const participantsResponse = await databases.listDocuments(DATABASE_ID, PARTICIPANTS_COLLECTION_ID);
-                allParticipants = participantsResponse.documents;
-
+                // Get all participants using helper function
+                allParticipants = await getAllDocuments(DATABASE_ID, PARTICIPANTS_COLLECTION_ID);
                 const totalParticipants = allParticipants.length;
+
+                console.log(`Loaded ${totalParticipants} participants total`);
 
                 document.getElementById('totalParticipants').textContent = totalParticipants;
                 document.getElementById('csvUploads').textContent = totalParticipants > 0 ? '1' : '0';
@@ -760,25 +789,20 @@
         // Load existing participant IDs
         async function loadExistingParticipantIds() {
             try {
-                const participantsResponse = await databases.listDocuments(
-                    DATABASE_ID,
-                    PARTICIPANTS_COLLECTION_ID
-                );
+                // Get all participants and submissions using helper function
+                allParticipants = await getAllDocuments(DATABASE_ID, PARTICIPANTS_COLLECTION_ID);
+                allSubmissions = await getAllDocuments(DATABASE_ID, COLLECTION_ID);
 
-                const submissionsResponse = await databases.listDocuments(
-                    DATABASE_ID,
-                    COLLECTION_ID
-                );
-
-                allParticipants = participantsResponse.documents;
-                allSubmissions = submissionsResponse.documents;
+                console.log(`Loaded ${allParticipants.length} participants and ${allSubmissions.length} submissions`);
 
                 displayParticipants(allParticipants);
                 updateTotalCount();
             } catch (error) {
                 console.error('Error loading participant IDs:', error);
-                document.getElementById('existingIdsList').innerHTML = 
-                    '<p class="p-4 text-red-500">Error loading participant IDs.</p>';
+                const existingIdsList = document.getElementById('existingIdsList');
+                if (existingIdsList) {
+                    existingIdsList.innerHTML = '<p class="p-4 text-red-500">Error loading participant IDs.</p>';
+                }
             }
         }
 
